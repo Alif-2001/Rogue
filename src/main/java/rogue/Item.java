@@ -6,7 +6,13 @@ import java.awt.Point;
  */
 public class Item  {
 
-
+    private int itemId;
+    private String itemName;
+    private String itemType;
+    private Point itemXyLocation;
+    private Character itemDisplay;
+    private String itemDescription;
+    private Room itemRoom;
 
     //Constructors
     public Item() {
@@ -14,84 +20,86 @@ public class Item  {
     }
 
     public Item(int id, String name, String type, Point xyLocation) {
-
+        itemId = id;
+        itemName = name;
+        itemType = type;
+        itemXyLocation = xyLocation;
     }
     
     // Getters and setters
 
 
     public int getId() {
-        return 0;
-       
+        return itemId;
     }
 
 
     public void setId(int id) {
-
+        itemId = id;
     }
 
 
     public String getName() {
-        return null;
+        return itemName;
     }
 
 
     public void setName(String name) {
-
+        itemName = name;
     }
 
 
     public String getType() {
-        return null;
+        return itemType;
 
     }
 
 
     public void setType(String type) {
-
+        itemType = type;
     }
     
 
     public Character getDisplayCharacter() {
-        return null;
+        return itemDisplay;
         
     }
 
 
     public void setDisplayCharacter(Character newDisplayCharacter) {
-        
+        itemDisplay = newDisplayCharacter;
     }
 
 
     public String getDescription() {
-        return null;
+        return itemDescription;
      
     }
 
 
     public void setDescription(String newDescription) {
-     
+        itemDescription = newDescription;
     }
 
 
     public Point getXyLocation() {
-        return null;
+        return itemXyLocation;
      
     }
 
     
     public void setXyLocation(Point newXyLocation) {
-        
+        itemXyLocation = newXyLocation;
     }
 
 
     public Room getCurrentRoom() {
-        return null;
+        return itemRoom;
         
     }
 
 
     public void setCurrentRoom(Room newCurrentRoom) {
-        
+        itemRoom = newCurrentRoom;
     }
 }

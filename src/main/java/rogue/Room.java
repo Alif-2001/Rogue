@@ -1,6 +1,9 @@
 package rogue;
 import java.util.ArrayList; 
 import java.util.Map;
+
+// import sun.invoke.empty.Empty;
+
 import java.awt.Point;
 
 
@@ -10,107 +13,158 @@ import java.awt.Point;
  */
 public class Room  {
 
-  
+   private int roomWidth;
+   private int roomHeight;
+   private int roomId;
+   private ArrayList<Item> roomItems;
+   private Player roomPlayer;
+   private Map<String, Integer> roomDoors;
+   private boolean playerInRoom = false;
 
-    // Default constructor
- public Room() {
+   // Default constructor
+   public Room() {
 
- }
+   }
 
- 
+      // Required getter and setters below
 
+   
+   public int getWidth() {
+      return roomWidth;
+   }
 
-   // Required getter and setters below
+   
+   public void setWidth(int newWidth) {
+      roomWidth = newWidth;
+   }
 
- 
- public int getWidth() {
-
-return 0;
- }
-
- 
- public void setWidth(int newWidth) {
-
- }
-
- 
- public int getHeight() {
-
-return 0;
- }
-
-
- public void setHeight(int newHeight) {
- }
-
- public int getId() {
-    return 0;
-
- }
+   
+   public int getHeight() {
+      return roomHeight;
+   }
 
 
- public void setId(int newId) {
+   public void setHeight(int newHeight) {
+      roomHeight = newHeight;
+   }
 
- }
-
-
- public ArrayList<Item> getRoomItems() {
-    return null;
-
- }
+   public int getId() {
+      return roomId;
+   }
 
 
- public void setRoomItems(ArrayList<Item> newRoomItems) {
-
- }
-
-
- public Player getPlayer() {
-    return null;
-
- }
+   public void setId(int newId) {
+      roomId = newId;
+   }
 
 
- public void setPlayer(Player newPlayer) {
+   public ArrayList<Item> getRoomItems() {
+      return roomItems;
+   }
 
- }
+
+   public void setRoomItems(ArrayList<Item> newRoomItems) {
+      roomItems = newRoomItems;
+   }
 
 
- 
+   public Player getPlayer() {
+      return roomPlayer;
+   }
+
+
+   public void setPlayer(Player newPlayer) {
+      roomPlayer = newPlayer;
+      playerInRoom = true;
+   }
 
 
 
- public int getDoor(String direction){
+   public int getDoor(String direction){
+      return roomDoors.get(direction);
+   }
 
-    return 0;
+   /*
+   direction is one of NSEW
+   location is a number between 0 and the length of the wall
+   */
 
- }
-
-/*
-direction is one of NSEW
-location is a number between 0 and the length of the wall
-*/
-
-public void setDoor(String direction, int location){
-
-}
+   public void setDoor(String direction, int location){
+      roomDoors.put(direction, location);
+   }
 
 
-public boolean isPlayerInRoom() {
-
-return true;
-}
+   public boolean isPlayerInRoom() {
+      if (playerInRoom){
+         return true;
+      }else{
+         return false;
+      }
+   }
 
 
 
 
    /**
     * Produces a string that can be printed to produce an ascii rendering of the room and all of its contents
-    * @return (String) String representation of how the room looks
-    */
+   * @return (String) String representation of how the room looks
+   */
    public String displayRoom() {
-    return null;
-     
-     
+      String disp = "";
+      Point playerLocation, itemLocation;
+      Boolean itemFound = false; 
+   
+
+      for(int i = 0; i<roomHeight; i++){
+         for(int j=0 ; j<roomWidth; j++){
+            if(i == 0 || i == roomHeight-1){
+
+               if(roomDoors.containsKey("N") || roomDoors.containsKey("S")){
+                  if (roomDoors.get("N") == j && i == roomHeight-1){
+                     disp += '+';
+                  }else if(roomDoors.get("S") == j && i == 0){
+                     disp += '+';
+                  }
+               }else{
+                  disp += '-';
+               }
+            }else if(j == 0 || j == roomWidth-1){
+               if(roomDoors.containsKey("W") || roomDoors.containsKey("E")){
+                  if (roomDoors.get("W") == i && j == 0){
+                     disp += '+';
+                  }else if(roomDoors.get("E") == i && j == roomWidth-1){
+                     disp += '+';
+                  }
+               }else{
+                  disp += '|';
+               }
+            }else{
+               if (isPlayerInRoom() == true){
+                  Player p = getPlayer();
+                  playerLocation= p.getXyLocation();
+                  if(i == playerLocation.getY() && j == playerLocation.getX()){
+                     disp += '@';
+                  }
+               }else{
+                  
+                  for (Item item : roomItems ){
+                     itemLocation = item.getXyLocation();
+                     if(i == itemLocation.getY() && j == itemLocation.getX()){
+                        itemFound = true;
+                     }
+                  }
+                  if(itemFound == true){
+                     disp += '*';
+                  }else{
+                     disp += '.';
+                  }
+               }
+               
+            }
+            
+         }
+         disp += "\n";
+      }
+   return disp;
    }
 }
