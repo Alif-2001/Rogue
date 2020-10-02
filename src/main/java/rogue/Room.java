@@ -106,7 +106,7 @@ public class Room  {
    */
 
    public void setDoor(String direction, int location){
-      this.roomDoors.put(direction, location);
+      roomDoors.put(direction, location);
    }
 
 
@@ -129,27 +129,30 @@ public class Room  {
       String disp = "";
       Point playerLocation, itemLocation;
       Boolean itemFound = false; 
-   
 
       for(int i = 0; i<roomHeight; i++){
          for(int j=0 ; j<roomWidth; j++){
             if(i == 0 || i == roomHeight-1){
 
                if(roomDoors.containsKey("N") || roomDoors.containsKey("S")){
-                  if (roomDoors.get("N") == j && i == roomHeight-1){
+                  if (roomDoors.containsKey("N") && roomDoors.get("N") == j && i == roomHeight-1){
                      disp += '+';
-                  }else if(roomDoors.get("S") == j && i == 0){
+                  }else if(roomDoors.containsKey("S") && roomDoors.get("S") == j && i == 0){
                      disp += '+';
+                  }else{
+                     disp += '-';
                   }
                }else{
                   disp += '-';
                }
             }else if(j == 0 || j == roomWidth-1){
                if(roomDoors.containsKey("W") || roomDoors.containsKey("E")){
-                  if (roomDoors.get("W") == i && j == 0){
+                  if (roomDoors.containsKey("W")  && roomDoors.get("W") == i && j == 0){
                      disp += '+';
-                  }else if(roomDoors.get("E") == i && j == roomWidth-1){
+                  }else if(roomDoors.containsKey("E")  && roomDoors.get("E") == i && j == roomWidth-1){
                      disp += '+';
+                  }else{
+                     disp += '|';
                   }
                }else{
                   disp += '|';

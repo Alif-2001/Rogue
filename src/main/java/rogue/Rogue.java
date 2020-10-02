@@ -20,7 +20,7 @@ public class Rogue{
     private Player roguePlayer;
     private ArrayList<Room> rogueRooms = new ArrayList<>();
     private ArrayList<Item> rogueItems = new ArrayList<>();
-    private Map<String,String> rogueSymbols = new HashMap<String, String>();
+    private Map<String, String> rogueSymbols = new HashMap<String, String>();
 
     public void setPlayer(Player thePlayer){
         roguePlayer = thePlayer;
@@ -96,8 +96,8 @@ public class Rogue{
 
                 for(Object object2: doors){
                     String direction = ((JSONObject)object2).get("dir").toString();
-                    //int location = Integer.parseInt(((JSONObject)object2).get("id").toString());
-                    //room.setDoor(direction, 5);
+                    int location = Integer.parseInt(((JSONObject)object2).get("id").toString());
+                    room.setDoor(direction, location);
                 }
                 
                 JSONObject JSON3 = (JSONObject) object;
