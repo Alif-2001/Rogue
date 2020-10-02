@@ -1,5 +1,6 @@
 package rogue;
-import java.util.ArrayList; 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 // import sun.invoke.empty.Empty;
@@ -16,14 +17,15 @@ public class Room  {
    private int roomWidth;
    private int roomHeight;
    private int roomId;
-   private ArrayList<Item> roomItems;
-   private Player roomPlayer;
-   private Map<String, Integer> roomDoors;
+   private ArrayList<Item> roomItems = new ArrayList<Item>();
+   private Player roomPlayer = new Player();
+   private Map<String, Integer> roomDoors = new HashMap<String, Integer>();
    private boolean playerInRoom = false;
+   private boolean startRoom = false;
 
    // Default constructor
    public Room() {
-
+      
    }
 
       // Required getter and setters below
@@ -78,7 +80,21 @@ public class Room  {
       playerInRoom = true;
    }
 
-
+   public void makeStart(){
+      startRoom = true;
+      Point location = new Point();
+      location.setLocation(1, 1);
+      roomPlayer.setXyLocation(location);
+      playerInRoom = true;
+   }
+   
+   public boolean isStart(){
+      if(startRoom == true){
+         return true;
+      }else{
+         return false;
+      }
+   }
 
    public int getDoor(String direction){
       return roomDoors.get(direction);
@@ -90,7 +106,7 @@ public class Room  {
    */
 
    public void setDoor(String direction, int location){
-      roomDoors.put(direction, location);
+      this.roomDoors.put(direction, location);
    }
 
 
@@ -139,12 +155,9 @@ public class Room  {
                   disp += '|';
                }
             }else{
-               if (isPlayerInRoom() == true){
-                  Player p = getPlayer();
-                  playerLocation= p.getXyLocation();
-                  if(i == playerLocation.getY() && j == playerLocation.getX()){
+               playerLocation= roomPlayer.getXyLocation();
+               if (playerLocation !=null && i == playerLocation.getY() && j == playerLocation.getX()){
                      disp += '@';
-                  }
                }else{
                   
                   for (Item item : roomItems ){
@@ -155,6 +168,7 @@ public class Room  {
                   }
                   if(itemFound == true){
                      disp += '*';
+                     itemFound = false;
                   }else{
                      disp += '.';
                   }

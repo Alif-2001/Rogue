@@ -51,8 +51,8 @@ public class A1Solution{
         System.out.println("We have liftoff!");
         Rogue rogue = new Rogue();
         rogue.setSymbols(jsonSymbols);
-        
+        rogue.createRooms(jsonRooms);
+        String disp = rogue.displayAll();
+        System.out.println(disp);
     }
-
-
 }
