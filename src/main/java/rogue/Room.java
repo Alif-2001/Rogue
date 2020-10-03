@@ -20,6 +20,7 @@ public class Room  {
    private ArrayList<Item> roomItems = new ArrayList<Item>();
    private Player roomPlayer = new Player();
    private Map<String, Integer> roomDoors = new HashMap<String, Integer>();
+   private Map<String, String> roomSymbols = new HashMap<String, String>();
    private boolean playerInRoom = false;
    private boolean startRoom = false;
 
@@ -118,7 +119,9 @@ public class Room  {
       }
    }
 
-
+   public void setSymbols(Map<String, String> symbols){
+      roomSymbols = symbols;
+   }
 
 
    /**
@@ -136,31 +139,31 @@ public class Room  {
 
                if(roomDoors.containsKey("N") || roomDoors.containsKey("S")){
                   if (roomDoors.containsKey("N") && roomDoors.get("N") == j && i == roomHeight-1){
-                     disp += '+';
+                     disp += roomSymbols.get("DOOR");
                   }else if(roomDoors.containsKey("S") && roomDoors.get("S") == j && i == 0){
-                     disp += '+';
+                     disp += roomSymbols.get("DOOR");
                   }else{
-                     disp += '-';
+                     disp += roomSymbols.get("NS_WALL");
                   }
                }else{
-                  disp += '-';
+                  disp += roomSymbols.get("NS_WALL");
                }
             }else if(j == 0 || j == roomWidth-1){
                if(roomDoors.containsKey("W") || roomDoors.containsKey("E")){
                   if (roomDoors.containsKey("W")  && roomDoors.get("W") == i && j == 0){
-                     disp += '+';
+                     disp += roomSymbols.get("DOOR");
                   }else if(roomDoors.containsKey("E")  && roomDoors.get("E") == i && j == roomWidth-1){
-                     disp += '+';
+                     disp += roomSymbols.get("DOOR");
                   }else{
-                     disp += '|';
+                     disp += roomSymbols.get("EW_WALL");
                   }
                }else{
-                  disp += '|';
+                  disp += roomSymbols.get("EW_WALL");
                }
             }else{
                playerLocation= roomPlayer.getXyLocation();
                if (playerLocation !=null && i == playerLocation.getY() && j == playerLocation.getX()){
-                     disp += '@';
+                  disp += roomSymbols.get("PLAYER");
                }else{
                   
                   for (Item item : roomItems ){
@@ -170,10 +173,10 @@ public class Room  {
                      }
                   }
                   if(itemFound == true){
-                     disp += '*';
+                     disp += roomSymbols.get("ITEM");
                      itemFound = false;
                   }else{
-                     disp += '.';
+                     disp += roomSymbols.get("FLOOR");
                   }
                }
                

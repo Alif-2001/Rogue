@@ -138,6 +138,7 @@ public class Rogue{
         //creates a string that displays all the rooms in the dungeon
         String disp = "";
         for(Room room: rogueRooms){
+            room.setSymbols(rogueSymbols);
             disp += "<---- [Room "+room.getId()+"] ---->\n";
             if(room.isStart() == true){
                 disp += "- Starting Room\n";
