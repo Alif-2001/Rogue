@@ -37,9 +37,7 @@ public class Rogue{
             JSONArray ja = (JSONArray)JSON.get("symbols");
             
             for(Object object: ja){
-                String name = ((JSONObject)object).get("name").toString();
-                String symbol = ((JSONObject)object).get("symbol").toString();
-                rogueSymbols.put(name, symbol);
+                rogueSymbols.put(((JSONObject)object).get("name").toString(), ((JSONObject)object).get("symbol").toString());
             }
         }catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -95,9 +93,7 @@ public class Rogue{
                 JSONArray doors = (JSONArray)JSON2.get("doors");
 
                 for(Object object2: doors){
-                    String direction = ((JSONObject)object2).get("dir").toString();
-                    int location = Integer.parseInt(((JSONObject)object2).get("id").toString());
-                    room.setDoor(direction, location);
+                    room.setDoor(((JSONObject)object2).get("dir").toString(), Integer.parseInt(((JSONObject)object2).get("id").toString()));
                 }
                 
                 JSONObject JSON3 = (JSONObject) object;
