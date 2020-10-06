@@ -138,9 +138,9 @@ public class Room  {
             if(i == 0 || i == roomHeight-1){
 
                if(roomDoors.containsKey("N") || roomDoors.containsKey("S")){
-                  if (roomDoors.containsKey("N") && roomDoors.get("N") == j && i == roomHeight-1){
+                  if (roomDoors.containsKey("N") && roomDoors.get("N") == j && i == 0){
                      disp += roomSymbols.get("DOOR");
-                  }else if(roomDoors.containsKey("S") && roomDoors.get("S") == j && i == 0){
+                  }else if(roomDoors.containsKey("S") && roomDoors.get("S") == j && i == roomHeight-1){
                      disp += roomSymbols.get("DOOR");
                   }else{
                      disp += roomSymbols.get("NS_WALL");
