@@ -12,7 +12,7 @@ import java.awt.Point;
  * A room within the dungeon - contains monsters, treasure,
  * doors out, etc.
  */
-public class Room  {
+public class Room {
 
    private int roomWidth;
    private int roomHeight;
@@ -20,28 +20,28 @@ public class Room  {
    private ArrayList<Item> roomItems = new ArrayList<Item>();
    private Player roomPlayer = new Player();
    private Map<String, Integer> roomDoors = new HashMap<String, Integer>();
-   private Map<String, String> roomSymbols = new HashMap<String, String>();
+   private Map<String, Character> roomSymbols = new HashMap<String, Character>();
    private boolean playerInRoom = false;
    private boolean startRoom = false;
 
    // Default constructor
    public Room() {
-      
+
    }
 
       // Required getter and setters below
 
-   
+
    public int getWidth() {
       return roomWidth;
    }
 
-   
+
    public void setWidth(int newWidth) {
       roomWidth = newWidth;
    }
 
-   
+
    public int getHeight() {
       return roomHeight;
    }
@@ -70,6 +70,10 @@ public class Room  {
       roomItems = newRoomItems;
    }
 
+   public void addItem(Item newItem){
+      roomItems.add(newItem);
+   }
+
 
    public Player getPlayer() {
       return roomPlayer;
@@ -81,23 +85,22 @@ public class Room  {
       playerInRoom = true;
    }
 
-   public void makeStart(){
+   public void makeStart() {
       startRoom = true;
       Point location = new Point();
       location.setLocation(1, 1);
       roomPlayer.setXyLocation(location);
       playerInRoom = true;
    }
-   
-   public boolean isStart(){
-      if(startRoom == true){
+
+   public boolean isStart() {
+      if (startRoom) {
          return true;
-      }else{
-         return false;
       }
+      return false;
    }
 
-   public int getDoor(String direction){
+   public int getDoor(String direction) {
       return roomDoors.get(direction);
    }
 
@@ -106,20 +109,19 @@ public class Room  {
    location is a number between 0 and the length of the wall
    */
 
-   public void setDoor(String direction, int location){
+   public void setDoor(String direction, int location) {
       roomDoors.put(direction, location);
    }
 
 
    public boolean isPlayerInRoom() {
-      if (playerInRoom){
+      if (playerInRoom) {
          return true;
-      }else{
-         return false;
       }
+      return false;
    }
 
-   public void setSymbols(Map<String, String> symbols){
+   public void setSymbols(Map<String, Character> symbols) {
       roomSymbols = symbols;
    }
 
@@ -130,58 +132,58 @@ public class Room  {
    */
    public String displayRoom() {
       String disp = "";
-      Point playerLocation, itemLocation;
-      Boolean itemFound = false; 
+      Point playerLocation;
+      Point itemLocation;
+      Boolean itemFound = false;
 
-      for(int i = 0; i<roomHeight; i++){
-         for(int j=0 ; j<roomWidth; j++){
-            if(i == 0 || i == roomHeight-1){
+      for (int i = 0; i < roomHeight; i++) {
+         for (int j = 0; j < roomWidth; j++) {
+            if (i == 0 || i == roomHeight - 1) {
 
-               if(roomDoors.containsKey("N") || roomDoors.containsKey("S")){
-                  if (roomDoors.containsKey("N") && roomDoors.get("N") == j && i == 0){
+               if (roomDoors.containsKey("N") || roomDoors.containsKey("S")) {
+                  if (roomDoors.containsKey("N") && roomDoors.get("N") == j && i == 0) {
                      disp += roomSymbols.get("DOOR");
-                  }else if(roomDoors.containsKey("S") && roomDoors.get("S") == j && i == roomHeight-1){
+                  } else if (roomDoors.containsKey("S") && roomDoors.get("S") == j && i == roomHeight - 1) {
                      disp += roomSymbols.get("DOOR");
-                  }else{
+                  } else {
                      disp += roomSymbols.get("NS_WALL");
                   }
-               }else{
+               } else {
                   disp += roomSymbols.get("NS_WALL");
                }
-            }else if(j == 0 || j == roomWidth-1){
-               if(roomDoors.containsKey("W") || roomDoors.containsKey("E")){
-                  if (roomDoors.containsKey("W")  && roomDoors.get("W") == i && j == 0){
+            } else if (j == 0 || j == roomWidth - 1) {
+               if (roomDoors.containsKey("W") || roomDoors.containsKey("E")) {
+                  if (roomDoors.containsKey("W")  && roomDoors.get("W") == i && j == 0) {
                      disp += roomSymbols.get("DOOR");
-                  }else if(roomDoors.containsKey("E")  && roomDoors.get("E") == i && j == roomWidth-1){
+                  } else if (roomDoors.containsKey("E")  && roomDoors.get("E") == i && j == roomWidth - 1) {
                      disp += roomSymbols.get("DOOR");
-                  }else{
+                  } else {
                      disp += roomSymbols.get("EW_WALL");
                   }
-               }else{
+               } else {
                   disp += roomSymbols.get("EW_WALL");
                }
-            }else{
-               playerLocation= roomPlayer.getXyLocation();
-               if (playerLocation !=null && i == playerLocation.getY() && j == playerLocation.getX()){
+            } else {
+               playerLocation = roomPlayer.getXyLocation();
+               if (playerLocation != null && i == playerLocation.getY() && j == playerLocation.getX()) {
                   disp += roomSymbols.get("PLAYER");
-               }else{
-                  
-                  for (Item item : roomItems ){
+               } else {
+                  Item toPut = new Item();
+                  for (Item item : roomItems) {
                      itemLocation = item.getXyLocation();
-                     if(i == itemLocation.getY() && j == itemLocation.getX()){
+                     if (i == itemLocation.getY() && j == itemLocation.getX()) {
                         itemFound = true;
+                        toPut = item;
                      }
                   }
-                  if(itemFound == true){
-                     disp += roomSymbols.get("ITEM");
+                  if (itemFound) {
+                     disp += roomSymbols.get(toPut.getType().toUpperCase());
                      itemFound = false;
-                  }else{
+                  } else {
                      disp += roomSymbols.get("FLOOR");
                   }
                }
-               
             }
-            
          }
          disp += "\n";
       }

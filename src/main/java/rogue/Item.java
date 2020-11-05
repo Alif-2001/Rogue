@@ -16,7 +16,6 @@ public class Item  {
 
     //Constructors
     public Item() {
-        
     }
 
     public Item(int id, String name, String type, Point xyLocation) {
@@ -25,7 +24,6 @@ public class Item  {
         itemType = type;
         itemXyLocation = xyLocation;
     }
-    
     // Getters and setters
 
 
@@ -58,11 +56,10 @@ public class Item  {
     public void setType(String type) {
         itemType = type;
     }
-    
+
 
     public Character getDisplayCharacter() {
         return itemDisplay;
-        
     }
 
 
@@ -73,7 +70,6 @@ public class Item  {
 
     public String getDescription() {
         return itemDescription;
-     
     }
 
 
@@ -84,10 +80,8 @@ public class Item  {
 
     public Point getXyLocation() {
         return itemXyLocation;
-     
     }
 
-    
     public void setXyLocation(Point newXyLocation) {
         itemXyLocation = newXyLocation;
     }
@@ -95,7 +89,6 @@ public class Item  {
 
     public Room getCurrentRoom() {
         return itemRoom;
-        
     }
 
 

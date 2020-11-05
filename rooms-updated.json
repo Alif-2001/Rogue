@@ -14,7 +14,7 @@
                     "y": 3
                 },
                 {
-                    "id": 1,
+                    "id": 2,
                     "x": 8,
                     "y": 8
                 }
@@ -34,13 +34,17 @@
                     "id": 6
                 }
             ],
-            "loot": []
+            "loot": [{
+                "id": 3,
+                "x": 3,
+                "y": 3
+            }]
         }
     ],
     "items": [{
             "id": 1,
             "name": "Health Potion",
-            "type": "consumable"
+            "type": "potion"
         },
         {
             "id": 2,
