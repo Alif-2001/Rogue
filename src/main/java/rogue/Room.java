@@ -1,7 +1,10 @@
 package rogue;
+import rogue.rogueExceptions.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.awt.Point;
 
 // import sun.invoke.empty.Empty;
 
@@ -70,8 +73,36 @@ public class Room {
       roomItems = newRoomItems;
    }
 
-   public void addItem(Item newItem){
-      roomItems.add(newItem);
+   private int generateRandomInt(int min, int max){
+      Random r = new Random();
+      return r.nextInt((max - min) + 1) + min;
+   }
+
+   public void addItem(Item newItem) throws ImpossiblePositionException{
+      double x = newItem.getXyLocation().getX();
+      double y = newItem.getXyLocation().getY();
+
+      boolean itemOverlap = false;
+
+      for(Item item: roomItems){
+         if(x == item.getXyLocation().getX() && y == item.getXyLocation().getY()){
+            itemOverlap = true;
+         }
+      }
+
+      if(x <= 0 || y <= 0 || x >= roomWidth-1 || y >= roomHeight-1 || itemOverlap == true){
+         Point position = new Point();
+         position.setLocation(generateRandomInt(1, roomWidth-2), generateRandomInt(1, roomHeight-2));
+         newItem.setXyLocation(position);
+         try{
+            this.addItem(newItem);
+         }catch (ImpossiblePositionException e){
+            throw e;
+         }
+         throw new ImpossiblePositionException("Can't put "+ newItem.getName() + "(ID: "+ String.valueOf(newItem.getId())+ ") " + "here, changing position.");
+      }else{
+         roomItems.add(newItem);
+      }
    }
 
 

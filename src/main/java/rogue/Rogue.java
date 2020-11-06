@@ -14,6 +14,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import rogue.rogueExceptions.ImpossiblePositionException;
+
 
 public class Rogue {
     private Player roguePlayer;
@@ -98,8 +100,6 @@ public class Rogue {
 
         Room room = new Room();
 
-        System.out.println(toAdd);
-
         room.setHeight(Integer.parseInt(toAdd.get("height").toString()));
         room.setWidth(Integer.parseInt(toAdd.get("width").toString()));
         room.setId(Integer.parseInt(toAdd.get("id").toString()));
@@ -158,10 +158,14 @@ public class Rogue {
 
     public void addItemToRooms(){
     
-        for(Room room: rogueRooms){
-            for(Item item: rogueItems){
+        for(Item item: rogueItems){
+            for(Room room: rogueRooms){
                 if(item.getCurrentRoom().getId() == room.getId()){
-                    room.addItem(item);
+                    try{
+                        room.addItem(item);
+                    }catch(ImpossiblePositionException e){
+                        System.out.println(e.getMessage());
+                    }
                 }
             }
             
@@ -182,6 +186,7 @@ public class Rogue {
                 disp += "- Starting Room\n";
             }
             disp += room.displayRoom();
+            
         }
         return disp;
     }
