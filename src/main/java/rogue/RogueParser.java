@@ -84,15 +84,6 @@ public class RogueParser {
         return symbols;
     }
 
-    /*
-    public Map<String, String> nextItemLocation(){
-        if (itemLocationIterator.hasNext()) {
-            return itemLocationIterator.next();
-        } else {
-            return null;
-        }
-    }
-    */
 
     /**
      * Get the character for a symbol.

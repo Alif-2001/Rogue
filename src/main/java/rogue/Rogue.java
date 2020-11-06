@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Random;
 
 import java.awt.Point;
 import java.util.Map;
@@ -15,6 +16,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import rogue.rogueExceptions.ImpossiblePositionException;
+import rogue.rogueExceptions.NotEnoughDoorsException;
 
 
 public class Rogue {
@@ -49,8 +51,10 @@ public class Rogue {
             doorInfo = parser.nextDoor();
         }
         
-
         addItemToRooms();
+        verifyRooms();
+
+
         addSymbols(parser.getSymbols());
 
     }
@@ -64,9 +68,14 @@ public class Rogue {
         return rogueItems;
 
     }
+
     public Player getPlayer() {
         return roguePlayer;
 
+    }
+
+    public ArrayList<Door> getDoors() {
+        return rogueDoors;
     }
 
 
@@ -107,8 +116,8 @@ public class Rogue {
 
         for(String letter: direction){
             if (Integer.parseInt(toAdd.get(letter).toString()) != -1){
-                room.setDoor(letter, Integer.parseInt(toAdd.get(letter).toString()));
                 Door door = new Door();
+                door.addLocation(Integer.parseInt(toAdd.get(letter).toString()), letter);
                 door.connectRoom(room);
                 rogueDoors.add(door);
             }
@@ -167,8 +176,9 @@ public class Rogue {
                     for(String letter: direction){
                         if(Integer.parseInt(toAdd.get(letter+"_Con").toString()) == room2.getId()){
                             for(Door door: rogueDoors){
-                                if(door.getConnectedRooms().get(0).getId() == room.getId()){
+                                if(door.getConnectedRooms().get(0).getId() == room.getId() && room.getDoors().contains(door) == false ){
                                     door.connectRoom(room2);
+                                    room.addDoor(door);
                                 }
                             }
                         }
@@ -192,6 +202,45 @@ public class Rogue {
                 }
             }
             
+        }
+    }
+
+    private int generateRandomInt(int min, int max){
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
+     }
+
+    public void verifyRooms(){
+        System.out.println(rogueDoors);
+        for (Room room: rogueRooms){
+            try{
+                room.verifyRoom();
+            }catch(NotEnoughDoorsException e){
+                System.out.println(e.getMessage());
+                System.out.println("Adding a door");
+                Door newDoor = new Door();
+                
+                newDoor.connectRoom(room);
+                String direction[] = {"N","S","E","W"};
+                String randomDirection = direction[generateRandomInt(0, 3)];
+                if(randomDirection == "N" || randomDirection == "S"){
+                    newDoor.addLocation(generateRandomInt(1, room.getWidth()-2), randomDirection);
+                }
+                if(randomDirection == "E" || randomDirection == "W"){
+                    newDoor.addLocation(generateRandomInt(2, room.getHeight()-3), randomDirection);
+                }
+
+                for (Room room2: rogueRooms){
+                    if(room2.getDoors().size() < 4 && room2.getId() != room.getId()){
+                        newDoor.connectRoom(room2);
+                    }
+                }
+                if(newDoor.getConnectedRooms().size() < 2){
+                    System.out.println("Dungeon file cannot be used!");
+                    System.exit(0);
+                }
+                room.addDoor(newDoor);
+            }
         }
     }
 

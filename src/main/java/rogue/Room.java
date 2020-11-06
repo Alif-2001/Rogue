@@ -22,7 +22,8 @@ public class Room {
    private int roomId;
    private ArrayList<Item> roomItems = new ArrayList<Item>();
    private Player roomPlayer = new Player();
-   private Map<String, Integer> roomDoors = new HashMap<String, Integer>();
+   //private Map<String, Integer> roomDoors = new HashMap<String, Integer>();
+   private ArrayList<Door> roomDoors = new ArrayList<Door>();
    private Map<String, Character> roomSymbols = new HashMap<String, Character>();
    private boolean playerInRoom = false;
    private boolean startRoom = false;
@@ -132,10 +133,16 @@ public class Room {
    }
 
    public int getDoorLocation(String direction) {
-      if(roomDoors.containsKey(direction)){
-         return roomDoors.get(direction);
+      for(Door door: roomDoors){
+         if(door.getPosition(direction)!=-1){
+            return door.getPosition(direction);
+         }
       }
       return -1;
+   }
+
+   public ArrayList<Door> getDoors(){
+      return roomDoors;
    }
 
    /*
@@ -143,8 +150,8 @@ public class Room {
    location is a number between 0 and the length of the wall
    */
 
-   public void setDoor(String direction, int location) {
-      roomDoors.put(direction,location);
+   public void addDoor(Door newDoor) {
+      roomDoors.add(newDoor);
    }
 
 
@@ -159,6 +166,38 @@ public class Room {
       roomSymbols = symbols;
    }
 
+   public boolean verifyRoom() throws NotEnoughDoorsException{
+
+      for(Item item: roomItems){
+         double x = item.getXyLocation().getX();
+         double y = item.getXyLocation().getY();
+
+         if(x <= 0 || y <= 0 || x >= roomWidth-1 || y >= roomHeight-1){
+            return false;
+         }
+      }
+
+      if(roomDoors.size() == 0){
+         throw new NotEnoughDoorsException("Not enough Doors in room: " + String.valueOf(roomId));
+      }
+
+      String direction[] = {"N","S","E","W"};
+      for (String letter: direction){
+         if(letter == "N" || letter == "S"){
+            if(getDoorLocation(letter) <= 0 || getDoorLocation(letter) > roomWidth-1){
+               return false;
+            }
+         }
+         if(letter == "E" || letter == "W"){
+            if(getDoorLocation(letter) <= 1 || getDoorLocation(letter) > roomHeight-2){
+               return false;
+            }
+         }
+      }
+
+
+      return true;
+   }
 
    /**
     * Produces a string that can be printed to produce an ascii rendering of the room and all of its contents
