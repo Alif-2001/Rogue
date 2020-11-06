@@ -22,6 +22,7 @@ public class Rogue {
     private RogueParser parser;
     private ArrayList<Room> rogueRooms = new ArrayList<>();
     private ArrayList<Item> rogueItems = new ArrayList<>();
+    private ArrayList<Door> rogueDoors = new ArrayList<>();
     private Map<String, Character> rogueSymbols = new HashMap<String, Character>();
 
 
@@ -41,14 +42,12 @@ public class Rogue {
             itemInfo = parser.nextItem();
         }
 
-        /*
-        Map <String,String> itemLocationInfo = parser.nextItemLocation();
-        while(itemLocationInfo !=null){
-            //System.out.println(itemLocationInfo);
-            itemLocationInfo = parser.nextItem();
+        
+        Map <String,String> doorInfo = parser.nextDoor();
+        while(doorInfo != null){
+            connectDoors(doorInfo);
+            doorInfo = parser.nextDoor();
         }
-        */
-
         
 
         addItemToRooms();
@@ -109,6 +108,9 @@ public class Rogue {
         for(String letter: direction){
             if (Integer.parseInt(toAdd.get(letter).toString()) != -1){
                 room.setDoor(letter, Integer.parseInt(toAdd.get(letter).toString()));
+                Door door = new Door();
+                door.connectRoom(room);
+                rogueDoors.add(door);
             }
         }
 
@@ -139,14 +141,14 @@ public class Rogue {
 
 
         */
-
         for(Room room: rogueRooms){
-            if(room.getId() == Integer.parseInt(toAdd.get("room").toString())){
+            if(toAdd.get("room") != null && room.getId() == Integer.parseInt(toAdd.get("room").toString())){
                 Item item = new Item();
                 item.setCurrentRoom(room);
                 item.setId(Integer.parseInt(toAdd.get("id").toString()));
                 item.setName(toAdd.get("name").toString());
                 item.setType(toAdd.get("type").toString());
+                item.setDescription(toAdd.get("description").toString());
                 Point position = new Point();
                 position.setLocation(Integer.parseInt(toAdd.get("x").toString()), Integer.parseInt(toAdd.get("y").toString()));
                 item.setXyLocation(position);
@@ -154,6 +156,27 @@ public class Rogue {
                 rogueItems.add(item);
             }
         }
+    }
+
+    public void connectDoors(Map<String,String> toAdd){
+        
+        for(Room room: rogueRooms){
+            if(Integer.parseInt(toAdd.get("id").toString()) == room.getId()){
+                for (Room room2: rogueRooms){
+                    String direction[] = {"N","S","E","W"};
+                    for(String letter: direction){
+                        if(Integer.parseInt(toAdd.get(letter+"_Con").toString()) == room2.getId()){
+                            for(Door door: rogueDoors){
+                                if(door.getConnectedRooms().get(0).getId() == room.getId()){
+                                    door.connectRoom(room2);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     public void addItemToRooms(){

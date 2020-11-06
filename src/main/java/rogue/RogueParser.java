@@ -23,6 +23,7 @@ public class RogueParser {
 
     private Iterator<Map<String, String>> roomIterator;
     private Iterator<Map<String, String>> itemIterator;
+    private Iterator<Map<String, String>> doorIterator;
     //private Iterator<Map<String, String>> itemLocationIterator;
 
     private int numOfRooms = -1;
@@ -69,6 +70,14 @@ public class RogueParser {
             return null;
         }
 
+    }
+
+    public Map<String, String> nextDoor(){
+        if(doorIterator.hasNext()){
+            return doorIterator.next();
+        }else{
+            return null;
+        }
     }
 
     public Map<String, Character> getSymbols() {
@@ -151,6 +160,7 @@ public class RogueParser {
 
             roomIterator = rooms.iterator();
             itemIterator = items.iterator();
+            doorIterator = rooms.iterator();
 
             //itemLocationIterator = itemLocations.iterator();
 
@@ -215,12 +225,19 @@ public class RogueParser {
         room.put("S", "-1");
         room.put("W", "-1");
 
+        //Set connections to -1
+        room.put("E_Con", "-1");
+        room.put("N_Con", "-1");
+        room.put("S_Con", "-1");
+        room.put("W_Con", "-1");
+
         // Update the map with any doors in the room
         JSONArray doorArray = (JSONArray) roomJSON.get("doors");
         for (int j = 0; j < doorArray.size(); j++) {
             JSONObject doorObj = (JSONObject) doorArray.get(j);
             String dir = String.valueOf(doorObj.get("dir"));
-            room.replace(dir, doorObj.get("id").toString());
+            room.replace(dir, doorObj.get("wall_pos").toString());
+            room.replace(dir+"_Con", doorObj.get("con_room").toString());
         }
 
         JSONArray lootArray = (JSONArray) roomJSON.get("loot");
@@ -275,6 +292,7 @@ public class RogueParser {
         item.put("id", itemsJSON.get("id").toString());
         item.put("name", itemsJSON.get("name").toString());
         item.put("type", itemsJSON.get("type").toString());
+        item.put("description", itemsJSON.get("description").toString());
 
         for (Map<String, String> itemLocation : itemLocations) {
             if (itemLocation.get("id").toString().equals(item.get("id").toString())) {

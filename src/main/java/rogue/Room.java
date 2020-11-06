@@ -32,7 +32,7 @@ public class Room {
 
    }
 
-      // Required getter and setters below
+   // Required getter and setters below
 
 
    public int getWidth() {
@@ -131,8 +131,11 @@ public class Room {
       return false;
    }
 
-   public int getDoor(String direction) {
-      return roomDoors.get(direction);
+   public int getDoorLocation(String direction) {
+      if(roomDoors.containsKey(direction)){
+         return roomDoors.get(direction);
+      }
+      return -1;
    }
 
    /*
@@ -141,7 +144,7 @@ public class Room {
    */
 
    public void setDoor(String direction, int location) {
-      roomDoors.put(direction, location);
+      roomDoors.put(direction,location);
    }
 
 
@@ -171,10 +174,10 @@ public class Room {
          for (int j = 0; j < roomWidth; j++) {
             if (i == 0 || i == roomHeight - 1) {
 
-               if (roomDoors.containsKey("N") || roomDoors.containsKey("S")) {
-                  if (roomDoors.containsKey("N") && roomDoors.get("N") == j && i == 0) {
+               if (getDoorLocation("N") != -1 || getDoorLocation("S") != -1) {
+                  if (getDoorLocation("N") != -1 && getDoorLocation("N") == j && i == 0) {
                      disp += roomSymbols.get("DOOR");
-                  } else if (roomDoors.containsKey("S") && roomDoors.get("S") == j && i == roomHeight - 1) {
+                  } else if (getDoorLocation("S") != -1 && getDoorLocation("S") == j && i == roomHeight - 1) {
                      disp += roomSymbols.get("DOOR");
                   } else {
                      disp += roomSymbols.get("NS_WALL");
@@ -183,10 +186,10 @@ public class Room {
                   disp += roomSymbols.get("NS_WALL");
                }
             } else if (j == 0 || j == roomWidth - 1) {
-               if (roomDoors.containsKey("W") || roomDoors.containsKey("E")) {
-                  if (roomDoors.containsKey("W")  && roomDoors.get("W") == i && j == 0) {
+               if (getDoorLocation("W") != -1 || getDoorLocation("E") != -1) {
+                  if (getDoorLocation("W") != -1  && getDoorLocation("W") == i && j == 0) {
                      disp += roomSymbols.get("DOOR");
-                  } else if (roomDoors.containsKey("E")  && roomDoors.get("E") == i && j == roomWidth - 1) {
+                  } else if (getDoorLocation("E") != -1  && getDoorLocation("E") == i && j == roomWidth - 1) {
                      disp += roomSymbols.get("DOOR");
                   } else {
                      disp += roomSymbols.get("EW_WALL");

@@ -1,14 +1,17 @@
 package rogue;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Door {
-    ArrayList<Room> connectedRooms = new ArrayList<>();
+    private ArrayList<Room> connectedRooms = new ArrayList<>();
+    
     public Door(){
 
     }
 
     public void connectRoom(Room r){
-        if(connectedRooms.size()<3){
+        if(connectedRooms.size()<2){
             connectedRooms.add(r);
         }
     }
