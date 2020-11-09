@@ -15,18 +15,23 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import rogue.rogueExceptions.ImpossiblePositionException;
-import rogue.rogueExceptions.NoSuchItemException;
-import rogue.rogueExceptions.NotEnoughDoorsException;
+import rogue.rogueExceptions.*;
 
 
 public class Rogue {
     private Player roguePlayer;
+    private Room currentRoom;
     private RogueParser parser;
     private ArrayList<Room> rogueRooms = new ArrayList<>();
     private ArrayList<Item> rogueItems = new ArrayList<>();
     private ArrayList<Door> rogueDoors = new ArrayList<>();
     private Map<String, Character> rogueSymbols = new HashMap<String, Character>();
+
+    public static final char UP = 'w';
+    public static final char DOWN = 's';
+    public static final char LEFT = 'a';
+    public static final char RIGHT = 'd';
+    private String nextDisplay = "hi";
 
 
     public Rogue(RogueParser theDungeonInfo){
@@ -54,7 +59,6 @@ public class Rogue {
         
         addItemToRooms();
         verifyRooms();
-
         addSymbols(parser.getSymbols());
 
     }
@@ -125,6 +129,7 @@ public class Rogue {
 
         if(Boolean.parseBoolean(toAdd.get("start").toString())){
             room.makeStart();
+            roguePlayer = room.getPlayer();
         }
         room.setRogue(this);
         rogueRooms.add(room);
@@ -266,5 +271,88 @@ public class Rogue {
             
         }
         return disp;
+    }
+
+    public String makeMove(char input) throws InvalidMoveException {
+        /* this method assesses a move to ensure it is valid.
+        If the move is valid, then the display resulting from the move
+        is calculated and set as the 'nextDisplay' (probably a private member variable)
+        If the move is not valid, an InvalidMoveException is thrown
+        and the nextDisplay is unchanged 
+        */
+        currentRoom = roguePlayer.getCurrentRoom();
+        if (input != UP && input != DOWN && input != LEFT && input != RIGHT){
+            throw new InvalidMoveException("I don't know this move");
+        }
+        
+        Point curPosition = roguePlayer.getXyLocation();
+        Point newPosition = new Point();
+
+        if (input == UP){
+            newPosition.setLocation(curPosition.getX(), curPosition.getY()-1);
+        }else if (input == DOWN){
+            newPosition.setLocation(curPosition.getX(), curPosition.getY()+1);
+        }else if (input == LEFT){
+            newPosition.setLocation(curPosition.getX()-1, curPosition.getY());
+        }else if (input == RIGHT){
+            newPosition.setLocation(curPosition.getX()+1, curPosition.getY());
+        }
+
+        double x, y;
+        x = newPosition.getX();
+        y = newPosition.getY();
+        boolean wall = false;
+
+        if (x == 0 || x == currentRoom.getWidth()-1){
+            if(x == 0){
+                if(currentRoom.getDoorLocation("W") == y){
+
+                }else{
+                    newPosition = curPosition;
+                    wall = true;
+                }
+            }else{
+                if(currentRoom.getDoorLocation("E") == y){
+
+                }else{
+                    newPosition = curPosition;
+                    wall = true;
+                }
+            }
+        }
+
+        if (y == 0 || y == currentRoom.getHeight()-1){
+            if(y == 0){
+                if(currentRoom.getDoorLocation("N") == x){
+
+                }else{
+                    newPosition = curPosition;
+                    wall = true;
+                }
+            }else{
+                if(currentRoom.getDoorLocation("S") == x){
+
+                }else{
+                    newPosition = curPosition;
+                    wall = true;
+                }
+            }
+        }
+
+        if(wall){
+            throw new InvalidMoveException("There's a wall here!");
+        }
+
+        roguePlayer.setXyLocation(newPosition);
+        currentRoom.setPlayer(roguePlayer);
+        currentRoom.setSymbols(rogueSymbols);
+        nextDisplay = currentRoom.displayRoom();
+  
+        return "That's a lovely move: " +  Character.toString(input);
+  
+    }
+  
+    public String getNextDisplay(){
+    return nextDisplay;
     }
 }

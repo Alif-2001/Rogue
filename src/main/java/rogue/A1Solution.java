@@ -10,6 +10,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import rogue.rogueExceptions.InvalidMoveException;
+
 public class A1Solution {
 
 
@@ -25,6 +27,13 @@ public class A1Solution {
         Rogue rogue = new Rogue(parser);
         
         String disp = rogue.displayAll();
+        System.out.println(disp);
+        try{
+            rogue.makeMove(rogue.DOWN);
+        }catch(InvalidMoveException e){
+            System.out.println(e.getMessage());
+        }
+        disp = rogue.getNextDisplay();
         System.out.println(disp);
     }
 }

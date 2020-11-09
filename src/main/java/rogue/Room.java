@@ -130,6 +130,7 @@ public class Room {
       Point location = new Point();
       location.setLocation(1, 1);
       roomPlayer.setXyLocation(location);
+      roomPlayer.setCurrentRoom(this);
       playerInRoom = true;
    }
 
@@ -270,4 +271,5 @@ public class Room {
       }
    return disp;
    }
+
 }
