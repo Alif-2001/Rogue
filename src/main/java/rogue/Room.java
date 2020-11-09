@@ -3,7 +3,6 @@ import rogue.rogueExceptions.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.awt.Point;
 
 // import sun.invoke.empty.Empty;
@@ -22,11 +21,11 @@ public class Room {
    private int roomId;
    private ArrayList<Item> roomItems = new ArrayList<Item>();
    private Player roomPlayer = new Player();
-   //private Map<String, Integer> roomDoors = new HashMap<String, Integer>();
    private ArrayList<Door> roomDoors = new ArrayList<Door>();
    private Map<String, Character> roomSymbols = new HashMap<String, Character>();
    private boolean playerInRoom = false;
    private boolean startRoom = false;
+   private Rogue thisGame;
 
    // Default constructor
    public Room() {
@@ -74,36 +73,45 @@ public class Room {
       roomItems = newRoomItems;
    }
 
-   private int generateRandomInt(int min, int max){
-      Random r = new Random();
-      return r.nextInt((max - min) + 1) + min;
+   public void setRogue(Rogue rogue){
+      thisGame = rogue;
    }
 
-   public void addItem(Item newItem) throws ImpossiblePositionException{
+
+   public void addItem(Item newItem) throws ImpossiblePositionException, NoSuchItemException{
       double x = newItem.getXyLocation().getX();
       double y = newItem.getXyLocation().getY();
 
       boolean itemOverlap = false;
 
+      
+
       for(Item item: roomItems){
          if(x == item.getXyLocation().getX() && y == item.getXyLocation().getY()){
             itemOverlap = true;
          }
+         if (!thisGame.getItems().contains(item)){
+            NoSuchItemException e = new NoSuchItemException("This Item does not exist in the room!");
+            e.setMissingItem(item);
+            throw(e);
+         }
       }
 
       if(x <= 0 || y <= 0 || x >= roomWidth-1 || y >= roomHeight-1 || itemOverlap == true){
-         Point position = new Point();
-         position.setLocation(generateRandomInt(1, roomWidth-2), generateRandomInt(1, roomHeight-2));
-         newItem.setXyLocation(position);
-         try{
-            this.addItem(newItem);
-         }catch (ImpossiblePositionException e){
-            throw e;
-         }
-         throw new ImpossiblePositionException("Can't put "+ newItem.getName() + "(ID: "+ String.valueOf(newItem.getId())+ ") " + "here, changing position.");
+         ImpossiblePositionException e2 = new ImpossiblePositionException("Can't put "+ newItem.getName() + "(ID: "+ String.valueOf(newItem.getId())+ ") " + "here, changing position.");
+         e2.setItem(newItem);
+         throw (e2);
       }else{
          roomItems.add(newItem);
       }
+   }
+
+   public void addSingleItem(Item newItem){
+      roomItems.add(newItem);
+   }
+
+   public void removeItem(Item remItem){
+      roomItems.remove(remItem);
    }
 
 

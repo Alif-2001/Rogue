@@ -1,5 +1,4 @@
 package rogue;
-import java.util.ArrayList;
 import java.awt.Point;
 /**
  * The player character

@@ -1,7 +1,5 @@
 package rogue;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Door {
     private ArrayList<Room> connectedRooms = new ArrayList<>();

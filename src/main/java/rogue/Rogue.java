@@ -16,6 +16,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import rogue.rogueExceptions.ImpossiblePositionException;
+import rogue.rogueExceptions.NoSuchItemException;
 import rogue.rogueExceptions.NotEnoughDoorsException;
 
 
@@ -53,7 +54,6 @@ public class Rogue {
         
         addItemToRooms();
         verifyRooms();
-
 
         addSymbols(parser.getSymbols());
 
@@ -126,7 +126,7 @@ public class Rogue {
         if(Boolean.parseBoolean(toAdd.get("start").toString())){
             room.makeStart();
         }
-
+        room.setRogue(this);
         rogueRooms.add(room);
     }
 
@@ -198,6 +198,11 @@ public class Rogue {
                         room.addItem(item);
                     }catch(ImpossiblePositionException e){
                         System.out.println(e.getMessage());
+                        e.setNewPosition(room.getHeight(), room.getWidth());
+                        room.addSingleItem(e.getItem());
+                    }catch(NoSuchItemException ex){
+                        System.out.println(ex.getMessage());
+                        room.removeItem(ex.getItem());
                     }
                 }
             }
