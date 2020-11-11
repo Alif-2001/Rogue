@@ -2,15 +2,15 @@ package rogue.rogueExceptions;
 
 import rogue.Item;
 
-public class NoSuchItemException extends Exception{
+public class NoSuchItemException extends Exception {
     private Item item = new Item();
-    public NoSuchItemException(String s){
+    public NoSuchItemException(String s) {
         super(s);
     }
-    public void setMissingItem(Item NoItem){
-        item = NoItem;
+    public void setMissingItem(Item noItem) {
+        item = noItem;
     }
-    public Item getItem(){
+    public Item getItem() {
         return item;
     }
 }

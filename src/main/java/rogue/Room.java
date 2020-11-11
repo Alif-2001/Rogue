@@ -1,13 +1,13 @@
 package rogue;
-import rogue.rogueExceptions.*;
+import rogue.rogueExceptions.ImpossiblePositionException;
+import rogue.rogueExceptions.NoSuchItemException;
+import rogue.rogueExceptions.NotEnoughDoorsException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.awt.Point;
 
 // import sun.invoke.empty.Empty;
-
-import java.awt.Point;
 
 
 /**
@@ -73,44 +73,42 @@ public class Room {
       roomItems = newRoomItems;
    }
 
-   public void setRogue(Rogue rogue){
+   public void setRogue(Rogue rogue) {
       thisGame = rogue;
    }
 
 
-   public void addItem(Item newItem) throws ImpossiblePositionException, NoSuchItemException{
+   public void addItem(Item newItem) throws ImpossiblePositionException, NoSuchItemException {
       double x = newItem.getXyLocation().getX();
       double y = newItem.getXyLocation().getY();
 
       boolean itemOverlap = false;
 
-      
 
-      for(Item item: roomItems){
-         if(x == item.getXyLocation().getX() && y == item.getXyLocation().getY()){
+
+      for (Item item: roomItems) {
+         if (x == item.getXyLocation().getX() && y == item.getXyLocation().getY()) {
             itemOverlap = true;
          }
-         if (!thisGame.getItems().contains(item)){
+         if (!thisGame.getItems().contains(item)) {
             NoSuchItemException e = new NoSuchItemException("This Item does not exist in the room!");
             e.setMissingItem(item);
             throw(e);
          }
       }
 
-      if(x <= 0 || y <= 0 || x >= roomWidth-1 || y >= roomHeight-1 || itemOverlap == true){
-         ImpossiblePositionException e2 = new ImpossiblePositionException("Can't put "+ newItem.getName() + "(ID: "+ String.valueOf(newItem.getId())+ ") " + "here, changing position.");
-         e2.setItem(newItem);
-         throw (e2);
-      }else{
+      if (x <= 0 || y <= 0 || x >= roomWidth - 1 || y >= roomHeight - 1 || itemOverlap) {
+         throw new ImpossiblePositionException("Changing " + newItem.getName() + " ID: " + String.valueOf(newItem.getId()) + " " + "position.");
+      } else {
          roomItems.add(newItem);
       }
    }
 
-   public void addSingleItem(Item newItem){
+   public void addSingleItem(Item newItem) {
       roomItems.add(newItem);
    }
 
-   public void removeItem(Item remItem){
+   public void removeItem(Item remItem) {
       roomItems.remove(remItem);
    }
 
@@ -142,15 +140,24 @@ public class Room {
    }
 
    public int getDoorLocation(String direction) {
-      for(Door door: roomDoors){
-         if(door.getPosition(direction)!=-1){
+      for (Door door: roomDoors) {
+         if (door.getPosition(direction) != -1) {
             return door.getPosition(direction);
          }
       }
       return -1;
    }
 
-   public ArrayList<Door> getDoors(){
+   public Door getDoor(String direction) {
+      for (Door door: roomDoors) {
+         if (door.getPosition(direction) != -1) {
+            return door;
+         }
+      }
+      return null;
+   }
+
+   public ArrayList<Door> getDoors() {
       return roomDoors;
    }
 
@@ -175,30 +182,30 @@ public class Room {
       roomSymbols = symbols;
    }
 
-   public boolean verifyRoom() throws NotEnoughDoorsException{
+   public boolean verifyRoom() throws NotEnoughDoorsException {
 
-      for(Item item: roomItems){
+      for (Item item: roomItems) {
          double x = item.getXyLocation().getX();
          double y = item.getXyLocation().getY();
 
-         if(x <= 0 || y <= 0 || x >= roomWidth-1 || y >= roomHeight-1){
+         if (x <= 0 || y <= 0 || x >= roomWidth - 1 || y >= roomHeight - 1) {
             return false;
          }
       }
 
-      if(roomDoors.size() == 0){
+      if (roomDoors.size() == 0) {
          throw new NotEnoughDoorsException("Not enough Doors in room: " + String.valueOf(roomId));
       }
 
-      String direction[] = {"N","S","E","W"};
-      for (String letter: direction){
-         if(letter == "N" || letter == "S"){
-            if(getDoorLocation(letter) <= 0 || getDoorLocation(letter) > roomWidth-1){
+      String[] direction = {"N", "S", "E", "W"};
+      for (String letter: direction) {
+         if (letter == "N" || letter == "S") {
+            if (getDoorLocation(letter) <= 0 || getDoorLocation(letter) > roomWidth - 1) {
                return false;
             }
          }
-         if(letter == "E" || letter == "W"){
-            if(getDoorLocation(letter) <= 1 || getDoorLocation(letter) > roomHeight-2){
+         if (letter == "E" || letter == "W") {
+            if (getDoorLocation(letter) <= 1 || getDoorLocation(letter) > roomHeight - 2) {
                return false;
             }
          }
@@ -209,7 +216,7 @@ public class Room {
    }
 
    /**
-    * Produces a string that can be printed to produce an ascii rendering of the room and all of its contents
+    * Produces a string that can be printed to produce an ascii rendering of the room and all of its contents.
    * @return (String) String representation of how the room looks
    */
    public String displayRoom() {

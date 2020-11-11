@@ -72,10 +72,10 @@ public class RogueParser {
 
     }
 
-    public Map<String, String> nextDoor(){
-        if(doorIterator.hasNext()){
+    public Map<String, String> nextDoor() {
+        if (doorIterator.hasNext()) {
             return doorIterator.next();
-        }else{
+        } else {
             return null;
         }
     }
@@ -83,7 +83,6 @@ public class RogueParser {
     public Map<String, Character> getSymbols() {
         return symbols;
     }
-
 
     /**
      * Get the character for a symbol.
@@ -228,7 +227,7 @@ public class RogueParser {
             JSONObject doorObj = (JSONObject) doorArray.get(j);
             String dir = String.valueOf(doorObj.get("dir"));
             room.replace(dir, doorObj.get("wall_pos").toString());
-            room.replace(dir+"_Con", doorObj.get("con_room").toString());
+            room.replace(dir + "_Con", doorObj.get("con_room").toString());
         }
 
         JSONArray lootArray = (JSONArray) roomJSON.get("loot");

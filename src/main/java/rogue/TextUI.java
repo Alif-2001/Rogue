@@ -17,7 +17,7 @@ import com.googlecode.lanterna.TerminalPosition;
 // import com.googlecode.lanterna.TerminalSize;
 
 import java.io.IOException;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 
 public class TextUI {
     private TerminalScreen screen;
@@ -28,14 +28,14 @@ public class TextUI {
 
     public TextUI() {
         super();
-        try{
+        try {
             screen = new TerminalScreen(new UnixTerminal());
             screen.setCursorPosition(TerminalPosition.TOP_LEFT_CORNER);
             screen.startScreen();
 
 
             screen.refresh();
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -44,40 +44,40 @@ public class TextUI {
 /* there will be several required methods that will
 be specified later this week */
 
-    public void putString(String toDisplay, int column, int row){
+    public void putString(String toDisplay, int column, int row) {
         Terminal t = screen.getTerminal();
-        try{
+        try {
             t.setCursorPosition(column, row);
-            for(char ch: toDisplay.toCharArray()){
+            for (char ch: toDisplay.toCharArray()) {
                 t.putCharacter(ch);
             }
-        }catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void setMessage(String msg){
+    public void setMessage(String msg) {
         putString("                                                ", 1, 1);
         putString(msg, startCol, msgRow);
     }
 
-    public void draw(String message, String room){
-        try{
+    public void draw(String message, String room) {
+        try {
             setMessage(message);
             putString(room, startCol, roomRow);
             screen.refresh();
-        }catch(IOException e){
+        } catch (IOException e) {
 
         }
     }
 
-    public char getInput(){
+    public char getInput() {
         KeyStroke keyStroke = null;
         char returnChar;
-        while(keyStroke == null){
-            try{
+        while (keyStroke == null) {
+            try {
                 keyStroke = screen.pollInput();
-            }catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -105,27 +105,24 @@ be specified later this week */
     // create an instance of the Game
         RogueParser parser = new RogueParser(configurationFileLocation);
         Rogue theGame = new Rogue(parser);
-        Player thePlayer = new Player("Alif");
-        
-        //theGame.setPlayer(thePlayer);
 
     //send the output of the rooms to the GUI and show
         message = "Welcome to my Rogue game";
         theGameUI.draw(message, theGame.getNextDisplay());
 
 
-        while(userInput != 'q'){
+        while (userInput != 'q') {
             userInput = theGameUI.getInput();
 
-            try{
+            try {
                 message = theGame.makeMove(userInput);
                 theGameUI.draw(message, theGame.getNextDisplay());
-            }catch(InvalidMoveException badMove){
+            } catch (InvalidMoveException badMove) {
                 theGameUI.setMessage(badMove.getMessage());
             }
         }
 
-        
+
 
    /* here there will be logic to run the game and provide
    the output to the UI.
@@ -139,8 +136,5 @@ be specified later this week */
 
    */
 
-
-
-
-    }   
+    }
 }

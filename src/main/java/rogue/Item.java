@@ -2,7 +2,7 @@ package rogue;
 import java.awt.Point;
 
 /**
- * A basic Item class; basic functionality for both consumables and equipment
+ * A basic Item class; basic functionality for both consumables and equipment.
  */
 public class Item  {
 
