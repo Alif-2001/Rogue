@@ -16,7 +16,10 @@ public class A1Solution {
 
 
 
-
+    /**
+     * Solution A1, prints all the rooms in the game.
+     * @param args comand line input.
+     */
     public static void main(String[] args) {
         // Hardcoded configuration file location/name
         String configurationFileLocation = "fileLocations.json";

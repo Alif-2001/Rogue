@@ -25,7 +25,9 @@ public class TextUI {
     private final char msgRow = 1;
     private final char roomRow = 3;
 
-
+    /**
+     * TextUI constructor.
+     */
     public TextUI() {
         super();
         try {
@@ -41,9 +43,12 @@ public class TextUI {
 
     }
 
-/* there will be several required methods that will
-be specified later this week */
-
+    /**
+     * This method is used to put the string to display on the terminal.
+     * @param toDisplay
+     * @param column
+     * @param row
+     */
     public void putString(String toDisplay, int column, int row) {
         Terminal t = screen.getTerminal();
         try {
@@ -56,11 +61,20 @@ be specified later this week */
         }
     }
 
+    /**
+     * This method is used to set the message to be sent to the terminal.
+     * @param msg message to be displayed
+     */
     public void setMessage(String msg) {
         putString("                                                ", 1, 1);
         putString(msg, startCol, msgRow);
     }
 
+    /**
+     * This method is used to put the string on the terminal and refresh.
+     * @param message message to display
+     * @param room room to display
+     */
     public void draw(String message, String room) {
         try {
             setMessage(message);
@@ -71,6 +85,10 @@ be specified later this week */
         }
     }
 
+    /**
+     * This method is used to get movement input from user.
+     * @return the key user pressed
+     */
     public char getInput() {
         KeyStroke keyStroke = null;
         char returnChar;
@@ -96,6 +114,10 @@ be specified later this week */
         return returnChar;
     }
 
+    /**
+     * A2 solution, play game by moving around in the rooms.
+     * @param args comand line input.
+     */
     public static void main(String[] args) {
         char userInput = 'w';
         String message;

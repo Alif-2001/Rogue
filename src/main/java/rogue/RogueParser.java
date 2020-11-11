@@ -72,6 +72,10 @@ public class RogueParser {
 
     }
 
+    /**
+     * Returns the next door.
+     * @return (Map) Information about a door
+     */
     public Map<String, String> nextDoor() {
         if (doorIterator.hasNext()) {
             return doorIterator.next();
@@ -80,6 +84,10 @@ public class RogueParser {
         }
     }
 
+    /**
+     * Returns the symbols to be used to print the game.
+     * @return (Map) symbol information
+     */
     public Map<String, Character> getSymbols() {
         return symbols;
     }

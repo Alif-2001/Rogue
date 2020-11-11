@@ -27,57 +27,93 @@ public class Room {
    private boolean startRoom = false;
    private Rogue thisGame;
 
-   // Default constructor
+   /**
+    * This method is used as a constructor.
+    */
    public Room() {
 
    }
 
    // Required getter and setters below
 
-
+   /**
+    * This method is used to get the width of the room.
+    * @return room's width
+    */
    public int getWidth() {
       return roomWidth;
    }
 
-
+   /**
+    * This method is used to set the width of the room.
+    * @param newWidth room's new width
+    */
    public void setWidth(int newWidth) {
       roomWidth = newWidth;
    }
 
-
+   /**
+    * This method is used to get the room's height.
+    * @return room's height
+    */
    public int getHeight() {
       return roomHeight;
    }
 
-
+   /**
+    * This method is used to set the Height of the room.
+    * @param newHeight room's new Height
+    */
    public void setHeight(int newHeight) {
       roomHeight = newHeight;
    }
 
+   /**
+    * This method is used to get the room's ID.
+    * @return room's ID
+    */
    public int getId() {
       return roomId;
    }
 
-
+   /**
+    * This method is used to set the room's ID.
+    *  @param newId room's new ID
+    */
    public void setId(int newId) {
       roomId = newId;
    }
 
-
+   /**
+    * This method is used to get all the items in the room.
+    * @return (ArrayList) all the items in the room
+    */
    public ArrayList<Item> getRoomItems() {
       return roomItems;
    }
 
-
+   /**
+    * This method is used to set all the items in the room.
+    * @param newRoomItems a list of the items to put in the room
+    */
    public void setRoomItems(ArrayList<Item> newRoomItems) {
       roomItems = newRoomItems;
    }
 
+   /**
+    * This method is used to set the game in which the room is.
+    * @param rogue the game that contains this room
+    */
    public void setRogue(Rogue rogue) {
       thisGame = rogue;
    }
 
-
+   /**
+    * This method is used to add an item to the room.
+    * @param newItem the new item to add to the room
+    * @throws ImpossiblePositionException if the item can't be placed at this place
+    * @throws NoSuchItemException if the item doesn't exist in the game
+    */
    public void addItem(Item newItem) throws ImpossiblePositionException, NoSuchItemException {
       double x = newItem.getXyLocation().getX();
       double y = newItem.getXyLocation().getY();
@@ -104,25 +140,42 @@ public class Room {
       }
    }
 
+   /**
+    * This method is used to add a single item to the room.
+    * @param newItem the new item to add
+    */
    public void addSingleItem(Item newItem) {
       roomItems.add(newItem);
    }
 
+   /**
+    * This method is used to remove a single item from the room.
+    * @param remItem the item to remove from the room
+    */
    public void removeItem(Item remItem) {
       roomItems.remove(remItem);
    }
 
-
+   /**
+    * This method is used to get the player in the room.
+    * @return (Player) the player in the room
+    */
    public Player getPlayer() {
       return roomPlayer;
    }
 
-
+   /**
+    * This method is used to set the player who is in the room.
+    * @param newPlayer the new player to put in the room
+    */
    public void setPlayer(Player newPlayer) {
       roomPlayer = newPlayer;
       playerInRoom = true;
    }
 
+   /**
+    * This method is used to set this room as start.
+    */
    public void makeStart() {
       startRoom = true;
       Point location = new Point();
@@ -132,6 +185,10 @@ public class Room {
       playerInRoom = true;
    }
 
+   /**
+    * This method is used to know if the room is the starting room or not.
+    * @return (boolean) is the room start
+    */
    public boolean isStart() {
       if (startRoom) {
          return true;
@@ -139,6 +196,11 @@ public class Room {
       return false;
    }
 
+   /**
+    * This method is used to get one of the room's the door's loaction according to the direction NSEW.
+    * @param direction one of NSEW
+    * @return (int) door's position on the wall
+    */
    public int getDoorLocation(String direction) {
       for (Door door: roomDoors) {
          if (door.getPosition(direction) != -1) {
@@ -148,6 +210,11 @@ public class Room {
       return -1;
    }
 
+   /**
+    * This method is used to get the door at a given direction NSEW.
+    * @param direction one of NSEW
+    * @return (Door) the door in that direction
+    */
    public Door getDoor(String direction) {
       for (Door door: roomDoors) {
          if (door.getPosition(direction) != -1) {
@@ -157,20 +224,26 @@ public class Room {
       return null;
    }
 
+   /**
+    * This method is used to get all the doors in the room.
+    * @return (ArrayList) list of all the doors.
+    */
    public ArrayList<Door> getDoors() {
       return roomDoors;
    }
 
-   /*
-   direction is one of NSEW
-   location is a number between 0 and the length of the wall
-   */
-
+   /**
+    * This method is used to add a door to the room.
+    * @param newDoor new door to be added
+    */
    public void addDoor(Door newDoor) {
       roomDoors.add(newDoor);
    }
 
-
+   /**
+    * This method is used to know if the player is in the room.
+    * @return (boolean) is player in room
+    */
    public boolean isPlayerInRoom() {
       if (playerInRoom) {
          return true;
@@ -178,10 +251,19 @@ public class Room {
       return false;
    }
 
+   /**
+    * This method is used to set all the symbols to display the room.
+    * @param symbols information on how to display
+    */
    public void setSymbols(Map<String, Character> symbols) {
       roomSymbols = symbols;
    }
 
+   /**
+    * This method is used to verify if the room has everything (doors, items) in right place.
+    * @return (boolean) is everything alright
+    * @throws NotEnoughDoorsException if the room doesn't have any doors
+    */
    public boolean verifyRoom() throws NotEnoughDoorsException {
 
       for (Item item: roomItems) {

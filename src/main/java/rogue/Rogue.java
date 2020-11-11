@@ -36,7 +36,10 @@ public class Rogue {
     public static final char RIGHT = 'd';
     private String nextDisplay = "";
 
-
+    /**
+     * this method is used to initiate a rogue game.
+     * @param theDungeonInfo info read from the json files
+     */
     public Rogue(RogueParser theDungeonInfo) {
 
         parser = theDungeonInfo;
@@ -66,26 +69,45 @@ public class Rogue {
 
     }
 
+    /**
+     * this method is used to get all the rooms in the game.
+     * @return list of rooms in the game
+     */
     public ArrayList<Room> getRooms() {
         return rogueRooms;
 
     }
 
+    /**
+     * this method is used to get all the items in the game.
+     * @return list of all the items in the game
+     */
     public ArrayList<Item> getItems() {
         return rogueItems;
 
     }
 
+    /**
+     * this method is used to get the player currently playing th game.
+     * @return the player in the game
+     */
     public Player getPlayer() {
         return roguePlayer;
 
     }
 
+    /**
+     * this method is used to get all the doors in the game.
+     * @return a list of all the doors.
+     */
     public ArrayList<Door> getDoors() {
         return rogueDoors;
     }
 
-
+    /**
+     * this method is used to create rooms and add them to the list of rooms in the game.
+     * @param toAdd map containing the id, the start value, the hight, the width, and doors in a single room.
+     */
     public void addRoom(Map<String, String> toAdd) {
 
         /* allocate memory for a room object
@@ -123,7 +145,7 @@ public class Rogue {
         for (String letter: direction) {
             if (Integer.parseInt(toAdd.get(letter).toString()) != -1) {
                 Door door = new Door();
-                door.addLocation(Integer.parseInt(toAdd.get(letter).toString()), letter);
+                door.setLocation(Integer.parseInt(toAdd.get(letter).toString()), letter);
                 door.connectRoom(room);
                 rogueDoors.add(door);
             }
@@ -137,6 +159,10 @@ public class Rogue {
         rogueRooms.add(room);
     }
 
+    /**
+     * this method is used to add items to the game.
+     * @param toAdd map containing the id, the position, the room, the name, and the type of the item.
+     */
     public void addItem(Map<String, String> toAdd) {
         /*
         allocate memory for the item object
@@ -176,6 +202,10 @@ public class Rogue {
         }
     }
 
+    /**
+     * this method is used to connect rooms through doors.
+     * @param toAdd map containing which room doors connect to others
+     */
     public void connectDoors(Map<String, String> toAdd) {
 
         for (Room room: rogueRooms) {
@@ -200,6 +230,9 @@ public class Rogue {
 
     }
 
+    /**
+     * this method is used to add items of the game to the respective rooms.
+     */
     public void addItemToRooms() {
         for (Item item: rogueItems) {
             for (Room room: rogueRooms) {
@@ -224,11 +257,20 @@ public class Rogue {
         }
     }
 
+    /**
+     * this method is used to generate integer between the given intgers.
+     * @param min smallest number
+     * @param max biggest number
+     * @return a randomn number between min and max
+     */
     public int generateRandomInt(int min, int max) {
         Random r = new Random();
         return r.nextInt((max - min) + 1) + min;
     }
 
+    /**
+     * this method is used to verify the rooms before starting the game (items, door, and player in appropriate places).
+     */
     public void verifyRooms() {
         int totalDoors = 2 + 2; //two doors on N and S, two on E and W.
         for (Room room: rogueRooms) {
@@ -243,10 +285,10 @@ public class Rogue {
                 String[] direction = {"N", "S", "E", "W"};
                 String randomDirection = direction[generateRandomInt(0, (direction.length) - 1)];
                 if (randomDirection == "N" || randomDirection == "S") {
-                    newDoor.addLocation(generateRandomInt(1, room.getWidth() - 2), randomDirection);
+                    newDoor.setLocation(generateRandomInt(1, room.getWidth() - 2), randomDirection);
                 }
                 if (randomDirection == "E" || randomDirection == "W") {
-                    newDoor.addLocation(generateRandomInt(2, room.getHeight() - 2 - 1), randomDirection);
+                    newDoor.setLocation(generateRandomInt(2, room.getHeight() - 2 - 1), randomDirection);
                 }
 
                 for (Room room2: rogueRooms) {
@@ -263,10 +305,18 @@ public class Rogue {
         }
     }
 
+    /**
+     * this method is used to set charchters that are going to build the game.
+     * @param toAdd map containing the charachter and what it corresponds to
+     */
     public void addSymbols(Map<String, Character> toAdd) {
         rogueSymbols = toAdd;
     }
 
+    /**
+     * this method is used to display all the rooms in the game.
+     * @return a String that represents all the rooms
+     */
     public String displayAll() {
         //creates a string that displays all the rooms in the dungeon
         String disp = "";
@@ -282,6 +332,11 @@ public class Rogue {
         return disp;
     }
 
+    /**
+     * this method is used to check if there's a door at a given location.
+     * @param newPosition the new position
+     * @return the direction at which the door is situated (NSEW)
+     */
     private String checkDoor(Point newPosition) {
         double x;
         double y;
@@ -309,6 +364,11 @@ public class Rogue {
         return direction;
     }
 
+    /**
+     * this method is used to check if there's a wall at a given location.
+     * @param newPosition the new Position
+     * @return a boolean that tells if ther's a wall or not
+     */
     private boolean checkWall(Point newPosition) {
         double x;
         double y;
@@ -336,6 +396,11 @@ public class Rogue {
         return wall;
     }
 
+    /**
+     * this method is used to check if there's an item at the given location.
+     * @param newPosition the new position
+     * @return which item the player is standing om
+     */
     private Item checkItem(Point newPosition) {
         double x;
         double y;
@@ -350,6 +415,12 @@ public class Rogue {
         return null;
     }
 
+    /**
+     * this method is used to get the player's new position according to their move.
+     * @param input direction charachter
+     * @param curPosition player's current position
+     * @return player's new postion
+     */
     private Point getNewPosition(char input, Point curPosition) {
         Point newPosition = new Point();
 
@@ -365,13 +436,16 @@ public class Rogue {
         return newPosition;
     }
 
+    /**
+     * this method assesses a move to ensure it is valid.
+     * If the move is valid, then the display resulting from the move is calculated
+     * and set as the 'nextDisplay' (probably a private member variable).
+     * If the move is not valid, an InvalidMoveException is thrown and the nextDisplay is unchanged
+     * @param input direction in which the player wants to go
+     * @return a string to print on each move
+     * @throws InvalidMoveException if the move is invalid
+     */
     public String makeMove(char input) throws InvalidMoveException {
-        /* this method assesses a move to ensure it is valid.
-        If the move is valid, then the display resulting from the move
-        is calculated and set as the 'nextDisplay' (probably a private member variable)
-        If the move is not valid, an InvalidMoveException is thrown
-        and the nextDisplay is unchanged
-        */
         currentRoom = roguePlayer.getCurrentRoom();
         if (input != UP && input != DOWN && input != LEFT && input != RIGHT) {
             throw new InvalidMoveException("I don't know this move");
@@ -414,6 +488,10 @@ public class Rogue {
         return "That's a lovely move: " +  Character.toString(input);
     }
 
+    /**
+     * this method is used to get the next string to be displayed on the screen.
+     * @return the new/next display
+     */
     public String getNextDisplay() {
         return nextDisplay;
     }

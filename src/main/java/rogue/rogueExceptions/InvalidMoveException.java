@@ -1,11 +1,11 @@
 package rogue.rogueExceptions;
 
 public class InvalidMoveException extends Exception {
-    public InvalidMoveException() {
-        super();
-    }
-
-    public InvalidMoveException(String message) {
-        super(message);
+    /**
+     * Exception constructor.
+     * @param s excepetion message
+     */
+    public InvalidMoveException(String s) {
+        super(s);
     }
 }
