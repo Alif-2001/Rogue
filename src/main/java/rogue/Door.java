@@ -36,6 +36,14 @@ public class Door {
     }
 
     /**
+     * This method is used to get the door's direction.
+     * @return room's direction NSEW
+     */
+    public String getDirection() {
+        return direction;
+    }
+
+    /**
      * coonect a second room to the door.
      * @param r room to link
      */

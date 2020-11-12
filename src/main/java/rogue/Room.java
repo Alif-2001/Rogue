@@ -21,7 +21,7 @@ public class Room {
    private int roomId;
    private ArrayList<Item> roomItems = new ArrayList<Item>();
    private Player roomPlayer = new Player();
-   private ArrayList<Door> roomDoors = new ArrayList<Door>();
+   private Map<String, Door> roomDoors = new HashMap<String, Door>();
    private Map<String, Character> roomSymbols = new HashMap<String, Character>();
    private boolean playerInRoom = false;
    private boolean startRoom = false;
@@ -203,7 +203,8 @@ public class Room {
     * @return (int) door's position on the wall
     */
    public int getDoorLocation(String direction) {
-      for (Door door: roomDoors) {
+      if (roomDoors.containsKey(direction)) {
+         Door door = roomDoors.get(direction);
          if (door.getPosition(direction) != -1) {
             return door.getPosition(direction);
          }
@@ -217,7 +218,8 @@ public class Room {
     * @return (Door) the door in that direction
     */
    public Door getDoor(String direction) {
-      for (Door door: roomDoors) {
+      if (roomDoors.containsKey(direction)) {
+         Door door = roomDoors.get(direction);
          if (door.getPosition(direction) != -1) {
             return door;
          }
@@ -227,9 +229,9 @@ public class Room {
 
    /**
     * This method is used to get all the doors in the room.
-    * @return (ArrayList) list of all the doors.
+    * @return (Map) list of all the doors.
     */
-   public ArrayList<Door> getDoors() {
+   public Map<String, Door> getDoors() {
       return roomDoors;
    }
 
@@ -238,7 +240,7 @@ public class Room {
     * @param newDoor new door to be added
     */
    public void addDoor(Door newDoor) {
-      roomDoors.add(newDoor);
+      roomDoors.put(newDoor.getDirection(), newDoor);
    }
 
    /**

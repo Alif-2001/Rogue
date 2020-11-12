@@ -216,7 +216,7 @@ public class Rogue {
                         if (Integer.parseInt(toAdd.get(letter + "_Con").toString()) == room2.getId()) {
                             for (Door door: rogueDoors) {
                                 if (door.getConnectedRooms().get(0).getId() == room.getId()) {
-                                    if (!(room.getDoors().contains(door))) {
+                                    if (!(room.getDoors().values().contains(door))) {
                                         door.connectRoom(room2);
                                         room.addDoor(door);
                                     }
@@ -240,7 +240,6 @@ public class Rogue {
                     try {
                         room.addItem(item);
                     } catch (ImpossiblePositionException e) {
-                        System.out.println(e.getMessage());
                         Point position = new Point();
                         int randX = generateRandomInt(1, room.getWidth() - 2);
                         int randY = generateRandomInt(1, room.getHeight() - 2);

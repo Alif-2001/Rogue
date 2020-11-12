@@ -135,6 +135,7 @@ public class TextUI {
 
         while (userInput != 'q') {
             userInput = theGameUI.getInput();
+
             try {
                 message = theGame.makeMove(userInput);
                 theGameUI.draw(message, theGame.getNextDisplay());
