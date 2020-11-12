@@ -134,7 +134,8 @@ public class Room {
       }
 
       if (x <= 0 || y <= 0 || x >= roomWidth - 1 || y >= roomHeight - 1 || itemOverlap) {
-         throw new ImpossiblePositionException("Changing " + newItem.getName() + " ID: " + String.valueOf(newItem.getId()) + " " + "position.");
+         throw new ImpossiblePositionException("Changing " + newItem.getName() + " ID: "
+                                                + String.valueOf(newItem.getId()) + " " + "position.");
       } else {
          roomItems.add(newItem);
       }
@@ -297,64 +298,82 @@ public class Room {
       return true;
    }
 
+
+   private String addDoorToDisplay(int i, int j) {
+      String disp = "";
+      if (i == 0 || i == roomHeight - 1) {
+
+         if (getDoorLocation("N") != -1 || getDoorLocation("S") != -1) {
+            if (getDoorLocation("N") != -1 && getDoorLocation("N") == j && i == 0) {
+               disp += roomSymbols.get("DOOR");
+            } else if (getDoorLocation("S") != -1 && getDoorLocation("S") == j && i == roomHeight - 1) {
+               disp += roomSymbols.get("DOOR");
+            } else {
+               disp += roomSymbols.get("NS_WALL");
+            }
+         } else {
+            disp += roomSymbols.get("NS_WALL");
+         }
+      } else if (j == 0 || j == roomWidth - 1) {
+         if (getDoorLocation("W") != -1 || getDoorLocation("E") != -1) {
+            if (getDoorLocation("W") != -1  && getDoorLocation("W") == i && j == 0) {
+               disp += roomSymbols.get("DOOR");
+            } else if (getDoorLocation("E") != -1  && getDoorLocation("E") == i && j == roomWidth - 1) {
+               disp += roomSymbols.get("DOOR");
+            } else {
+               disp += roomSymbols.get("EW_WALL");
+            }
+         } else {
+            disp += roomSymbols.get("EW_WALL");
+         }
+      }
+      return disp;
+   }
+
+   private String addItemToDisplay(int i, int j) {
+      String disp = "";
+      Point playerLocation;
+      Point itemLocation;
+      boolean itemFound = false;
+      playerLocation = roomPlayer.getXyLocation();
+      if (playerLocation != null && i == playerLocation.getY() && j == playerLocation.getX()) {
+         disp += roomSymbols.get("PLAYER");
+      } else {
+         Item toPut = new Item();
+         for (Item item : roomItems) {
+            itemLocation = item.getXyLocation();
+            if (i == itemLocation.getY() && j == itemLocation.getX()) {
+               itemFound = true;
+               toPut = item;
+            }
+         }
+
+         if (itemFound) {
+            disp += roomSymbols.get(toPut.getType().toUpperCase());
+            itemFound = false;
+         } else {
+            disp += roomSymbols.get("FLOOR");
+         }
+      }
+      return disp;
+   }
+
    /**
     * Produces a string that can be printed to produce an ascii rendering of the room and all of its contents.
    * @return (String) String representation of how the room looks
    */
    public String displayRoom() {
       String disp = "";
-      Point playerLocation;
-      Point itemLocation;
-      Boolean itemFound = false;
 
       for (int i = 0; i < roomHeight; i++) {
          for (int j = 0; j < roomWidth; j++) {
-            if (i == 0 || i == roomHeight - 1) {
-
-               if (getDoorLocation("N") != -1 || getDoorLocation("S") != -1) {
-                  if (getDoorLocation("N") != -1 && getDoorLocation("N") == j && i == 0) {
-                     disp += roomSymbols.get("DOOR");
-                  } else if (getDoorLocation("S") != -1 && getDoorLocation("S") == j && i == roomHeight - 1) {
-                     disp += roomSymbols.get("DOOR");
-                  } else {
-                     disp += roomSymbols.get("NS_WALL");
-                  }
-               } else {
-                  disp += roomSymbols.get("NS_WALL");
-               }
-            } else if (j == 0 || j == roomWidth - 1) {
-               if (getDoorLocation("W") != -1 || getDoorLocation("E") != -1) {
-                  if (getDoorLocation("W") != -1  && getDoorLocation("W") == i && j == 0) {
-                     disp += roomSymbols.get("DOOR");
-                  } else if (getDoorLocation("E") != -1  && getDoorLocation("E") == i && j == roomWidth - 1) {
-                     disp += roomSymbols.get("DOOR");
-                  } else {
-                     disp += roomSymbols.get("EW_WALL");
-                  }
-               } else {
-                  disp += roomSymbols.get("EW_WALL");
-               }
+            String door = addDoorToDisplay(i, j);
+            if (door != "") {
+               disp += door;
             } else {
-               playerLocation = roomPlayer.getXyLocation();
-               if (playerLocation != null && i == playerLocation.getY() && j == playerLocation.getX()) {
-                  disp += roomSymbols.get("PLAYER");
-               } else {
-                  Item toPut = new Item();
-                  for (Item item : roomItems) {
-                     itemLocation = item.getXyLocation();
-                     if (i == itemLocation.getY() && j == itemLocation.getX()) {
-                        itemFound = true;
-                        toPut = item;
-                     }
-                  }
-                  if (itemFound) {
-                     disp += roomSymbols.get(toPut.getType().toUpperCase());
-                     itemFound = false;
-                  } else {
-                     disp += roomSymbols.get("FLOOR");
-                  }
-               }
+               disp += addItemToDisplay(i, j);
             }
+
          }
          disp += "\n";
       }

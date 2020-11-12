@@ -277,8 +277,6 @@ public class Rogue {
             try {
                 room.verifyRoom();
             } catch (NotEnoughDoorsException e) {
-                System.out.println(e.getMessage());
-                System.out.println("Adding a door");
                 Door newDoor = new Door();
 
                 newDoor.connectRoom(room);
@@ -294,6 +292,7 @@ public class Rogue {
                 for (Room room2: rogueRooms) {
                     if (room2.getDoors().size() < totalDoors && room2.getId() != room.getId()) {
                         newDoor.connectRoom(room2);
+                        room2.addDoor(newDoor);
                     }
                 }
                 if (newDoor.getConnectedRooms().size() < 2) {
@@ -301,6 +300,7 @@ public class Rogue {
                     System.exit(0);
                 }
                 room.addDoor(newDoor);
+                rogueDoors.add(newDoor);
             }
         }
     }
@@ -446,6 +446,7 @@ public class Rogue {
      * @throws InvalidMoveException if the move is invalid
      */
     public String makeMove(char input) throws InvalidMoveException {
+        String toPrint = null;
         currentRoom = roguePlayer.getCurrentRoom();
         if (input != UP && input != DOWN && input != LEFT && input != RIGHT) {
             throw new InvalidMoveException("I don't know this move");
@@ -475,17 +476,19 @@ public class Rogue {
             currentRoom = rogueDoors.get(rogueDoors.indexOf(currentRoom.getDoor(doorDir))).getOtherRoom(currentRoom);
         }
         newPosition.setLocation(x, y);
-        System.out.println(newPosition.getLocation());
         roguePlayer.setXyLocation(newPosition);
         roguePlayer.setCurrentRoom(currentRoom);
         if (itemFound != null) {
             currentRoom.removeItem(itemFound);
             roguePlayer.pickItem(itemFound);
+            toPrint = "Picked " + itemFound.getName();
+        } else {
+            toPrint = "That's a lovely move: " +  Character.toString(input);
         }
         currentRoom.setPlayer(roguePlayer);
         currentRoom.setSymbols(rogueSymbols);
         nextDisplay = currentRoom.displayRoom();
-        return "That's a lovely move: " +  Character.toString(input);
+        return toPrint;
     }
 
     /**

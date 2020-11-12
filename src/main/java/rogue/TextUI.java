@@ -21,8 +21,8 @@ import java.io.IOException;
 
 public class TextUI {
     private TerminalScreen screen;
-    private final char startCol = 1;
-    private final char msgRow = 1;
+    private final char startCol = 0;
+    private final char msgRow = 2;
     private final char roomRow = 3;
 
     /**
@@ -66,7 +66,7 @@ public class TextUI {
      * @param msg message to be displayed
      */
     public void setMessage(String msg) {
-        putString("                                                ", 1, 1);
+        putString("                                                ", 1, 2);
         putString(msg, startCol, msgRow);
     }
 
@@ -135,7 +135,6 @@ public class TextUI {
 
         while (userInput != 'q') {
             userInput = theGameUI.getInput();
-
             try {
                 message = theGame.makeMove(userInput);
                 theGameUI.draw(message, theGame.getNextDisplay());
