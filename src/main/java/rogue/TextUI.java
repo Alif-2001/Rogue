@@ -22,7 +22,7 @@ import java.io.IOException;
 public class TextUI {
     private TerminalScreen screen;
     private final char startCol = 0;
-    private final char msgRow = 2;
+    private final char msgRow = 1;
     private final char roomRow = 3;
 
     /**
@@ -66,7 +66,7 @@ public class TextUI {
      * @param msg message to be displayed
      */
     public void setMessage(String msg) {
-        putString("                                                ", 1, 2);
+        putString("                                                ", 1, 1);
         putString(msg, startCol, msgRow);
     }
 
