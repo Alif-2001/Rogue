@@ -13,12 +13,13 @@ gradle build
 ##  Run
 
 ```bash
-java -jar build/libs/A1.jar
+java -jar build/libs/A2.jar
 ```
 
-##  Version 1
+##  Version 2
 
-Prints all the rooms in the dungeon with loots and doors.
+Displays the rooms on the terminal. The player can move using "w, a, s ,d".
+Explore the dungeon and pick up items!
 
 Example of json:
 ```json
@@ -29,8 +30,14 @@ Example of json:
             "height": 10,
             "width": 20,
             "doors": [{
-                "dir": "S",
-                "id": 2
+                "dir": "W",
+                "con_room": 2,
+                "wall_pos": 3
+            },
+            {
+                "dir": "E",
+                "con_room": 2,
+                "wall_pos": 5
             }],
             "loot": [{
                     "id": 1,
@@ -38,11 +45,30 @@ Example of json:
                     "y": 3
                 },
                 {
-                    "id": 1,
+                    "id": 2,
                     "x": 8,
                     "y": 8
                 }
             ]
+        }
+    ],
+    "items": [{
+            "id": 1,
+            "name": "Health Potion",
+            "type": "potion",
+            "description":"you feel better"
+        },
+        {
+            "id": 2,
+            "name": "Scroll of Fireball",
+            "type": "scroll",
+            "description":"A 20 foot ball of flame hurtles away from you"
+        },
+        {
+            "id": 3,
+            "name": "Mango",
+            "type": "food",
+            "description": "my that was a yummy mango!"
         }
     ]
 }
@@ -50,16 +76,17 @@ Example of json:
 
 Output:
 ```bash
-<---- [Room 1] ---->
-- Starting Room
+
+Thats a lovely move: w                          
+
 --------------------
 |@.................|
 |..................|
-|..*...............|
++..!...............|
+|..................|
+|..................+
 |..................|
 |..................|
-|..................|
-|..................|
-|.......*..........|
---+-----------------
+|.......?..........|
+--------------------
 ```
