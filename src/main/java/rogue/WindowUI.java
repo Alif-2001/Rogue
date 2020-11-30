@@ -4,6 +4,8 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.swing.SwingTerminal;
+
+
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.TerminalPosition;
 
@@ -398,8 +400,7 @@ Constructor.
         ArrayList<String> list = new ArrayList<String>();
         for (Item i: game.getPlayer().getInventory()) {
             if (i != null) {
-                String type = i.getType();
-                if (type.equals("Food") || type.equals("Potion") || type.equals("Small Food")) {
+                if (i instanceof Edible) {
                     list.add(i.getName());
                 }
             }
@@ -419,7 +420,7 @@ Constructor.
         for (Item i: game.getPlayer().getInventory()) {
             String type = i.getType();
             if (i != null) {
-                if (type.equals("Clothing") || type.equals("Ring")) {
+                if (i instanceof Wearable) {
                     list.add(i.getName());
                 }
             }
@@ -439,7 +440,7 @@ Constructor.
         for (Item i: game.getPlayer().getInventory()) {
             String type = i.getType();
             if (i != null) {
-                if (type.equals("Potion") || type.equals("SmallFood")) {
+                if (i instanceof Tossable) {
                     list.add(i.getName());
                 }
             }
