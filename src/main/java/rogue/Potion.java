@@ -1,6 +1,11 @@
 package rogue;
 
 public class Potion extends Magic implements Edible, Tossable{
+
+    public Potion(){
+        
+    }
+
     @Override
     public String eat(){
         super.getPlayer().removeItemFromInventory(this);

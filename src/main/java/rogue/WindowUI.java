@@ -49,18 +49,18 @@ public class WindowUI extends JFrame {
 
     private SwingTerminal terminal;
     private TerminalScreen screen;
-    public static final int WIDTH = 400;
+    public static final int WIDTH = 700;
     public static final int HEIGHT = 800;
     // Screen buffer dimensions are different than terminal dimensions
     public static final int COLS = 80;
     public static final int ROWS = 24;
    private final char startCol = 0;
-   private final char msgRow = 1;
-   private final char roomRow = 3;
+   private final char roomRow = 1;
    private Container contentPane;
    private JTextArea inventory = new JTextArea(10, 10);
    private JTextArea clothing = new JTextArea(10, 5);
    private JLabel playerName = new JLabel();
+   private JLabel message = new JLabel();
    private Rogue game;
 
 /**
@@ -90,7 +90,6 @@ Constructor.
     public void updateWindow(){
         contentPane = getContentPane();
         updateInventory();
-        //updateTerminal();
         updateClothing();
     }
 
@@ -113,6 +112,7 @@ Constructor.
         JPanel inventoryPanel = new JPanel();
         makeMenuBar();
         setUpLabelPanel();
+        setUpCommentPanel();
         setUpInventoryPanel(inventoryPanel);
         setTerminal();
     }
@@ -171,11 +171,20 @@ Constructor.
         this.setGame(game);
         game.verifyRooms();
         this.updateWindow();
-        draw("The game is loaded", game.getNextDisplay());
+        message.setText("The game is loaded!");
+        draw(game.getNextDisplay());
     }
 
     private void loadJson(){
-        
+        String file = FileChooser();
+        RogueParser parser = new RogueParser(file);
+        Player gamePlayer = game.getPlayer();
+        game = new Rogue(parser);
+        game.setPlayer(gamePlayer);
+        this.setGame(game);
+        this.updateWindow();
+        message.setText("The new map is loaded!");
+        draw(game.getNextDisplay());
     }
 
     private void NameChange(){
@@ -190,7 +199,22 @@ Constructor.
         thePanel.setBorder(prettyLine);
         playerName.setText("Player: "+game.getPlayer().getName());
         thePanel.add(playerName);
+        contentPane.add(thePanel, BorderLayout.NORTH);
+    }
+
+    private void setUpCommentPanel(){
+        JPanel thePanel = new JPanel();
+        Border prettyLine = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
+        thePanel.setBorder(prettyLine);
+        message.setText("Welcome to the Game!");
+        thePanel.add(message);
         contentPane.add(thePanel, BorderLayout.SOUTH);
+    }
+
+    public void setMessageToDisplay(String msg){
+        if(msg != null){
+            message.setText(msg);
+        }
     }
 
     private void setUpInventoryPanel(JPanel thePanel){
@@ -237,11 +261,6 @@ Constructor.
         clothing.setText(items);
     }
 
-    private void updateTerminal(){
-        terminal = new SwingTerminal();
-        start();
-    }
-
     private void start() {
         try {
             screen = new TerminalScreen(terminal);
@@ -272,14 +291,6 @@ Prints a string to the screen starting at the indicated column and row.
         }
         }
 
-/**
-Changes the message at the top of the screen for the user.
-@param msg the message to be displayed
-**/
-            public void setMessage(String msg) {
-                clearScreen();
-                putString(msg, startCol, msgRow);
-            }
 
             private void clearScreen(){
                 for(int i = 0; i < 50; i++) {
@@ -292,10 +303,10 @@ Redraws the whole screen including the room and the message.
 @param message the message to be displayed at the top of the room
 @param room the room map to be drawn
 **/
-            public void draw(String message, String room) {
+            public void draw(String room) {
 
                 try {
-                    setMessage(message);
+                    clearScreen();
                     putString(room, startCol, roomRow);
                     screen.refresh();
                 } catch (IOException e) {
@@ -335,20 +346,28 @@ keys to the equivalent movement keys in rogue.
         return returnChar;
     }
 
-    public void checkAction(char input){
+    public String checkAction(char input){
+        String msg = null;
         if(input == 't'){
             Item toToss = tossItem();
-            String msg = ((Tossable)toToss).toss();
+            if(toToss != null){
+                msg = ((Tossable)toToss).toss();
+            }
         }
         if(input == 'e'){
             Item toEat = eatItem();
-            String msg = ((Edible)toEat).eat();
+            if(toEat != null){
+                msg = ((Edible)toEat).eat();
+            }
         }
         if(input == 'w'){
             Item toWear = wearItem();
-            String msg = ((Wearable)toWear).wear();            
+            if(toWear != null){
+                msg = ((Wearable)toWear).wear();
+            }         
         }
         this.updateWindow();
+        return msg;
     }
 
     private Item eatItem(){
@@ -364,9 +383,12 @@ keys to the equivalent movement keys in rogue.
         Object[] list1 = list.toArray();
         JComboBox jcb = new JComboBox(list1);
         jcb.setEditable(false);
-        JOptionPane.showMessageDialog(this, jcb, "Select the item to eat", JOptionPane.QUESTION_MESSAGE);
+        JOptionPane.showMessageDialog(this, jcb, "Select the item to Eat", JOptionPane.QUESTION_MESSAGE);
         String item = jcb.getSelectedItem().toString();
-        return (getItemByName(jcb.getSelectedItem().toString()));
+        if(item != null){
+            return (getItemByName(jcb.getSelectedItem().toString()));
+        }
+        return null;
     }
 
     private Item wearItem(){
@@ -382,8 +404,12 @@ keys to the equivalent movement keys in rogue.
         Object[] list1 = list.toArray();
         JComboBox jcb = new JComboBox(list1);
         jcb.setEditable(false);
-        JOptionPane.showMessageDialog(this, jcb, "Select the item to wear", JOptionPane.QUESTION_MESSAGE);
-        return (getItemByName(jcb.getSelectedItem().toString()));
+        JOptionPane.showMessageDialog(this, jcb, "Select the item to Wear", JOptionPane.QUESTION_MESSAGE);
+        String item = jcb.getSelectedItem().toString();
+        if(item != null){
+            return (getItemByName(jcb.getSelectedItem().toString()));
+        }
+        return null;
     }
 
     private Item tossItem(){
@@ -399,8 +425,12 @@ keys to the equivalent movement keys in rogue.
         Object[] list1 = list.toArray();
         JComboBox jcb = new JComboBox(list1);
         jcb.setEditable(false);
-        JOptionPane.showMessageDialog(this, jcb, "Select the item to toss", JOptionPane.QUESTION_MESSAGE);
-        return (getItemByName(jcb.getSelectedItem().toString()));
+        JOptionPane.showMessageDialog(this, jcb, "Select the item to Toss", JOptionPane.QUESTION_MESSAGE);
+        String item = jcb.getSelectedItem().toString();
+        if(item != null){
+            return (getItemByName(jcb.getSelectedItem().toString()));
+        }
+        return null;
     }
 
     private Item getItemByName(String name){
@@ -429,11 +459,12 @@ The controller method for making the game logic work.
    //set up the initial game display
     Player thePlayer = new Player("Judi");
     theGame.setPlayer(thePlayer);
-    message = "Welcome to my Rogue game";
+    message = "Welcome to my Rogue game!";
 
     theGameUI.setGame(theGame);
     theGameUI.startWindow();
-    theGameUI.draw(message, theGame.getNextDisplay());
+    theGameUI.setMessageToDisplay(message);
+    theGameUI.draw(theGame.getNextDisplay());
     theGameUI.setVisible(true);
 
     while (userInput != 'q') {
@@ -443,13 +474,14 @@ The controller method for making the game logic work.
     //ask the game if the user can move there
     try {
         theGame = theGameUI.getGame();
-        theGameUI.checkAction(userInput);
+        theGameUI.setMessageToDisplay(theGameUI.checkAction(userInput));
         message = theGame.makeMove(userInput);
+        theGameUI.setMessageToDisplay(message);
         theGameUI.updateWindow();
-        theGameUI.draw(message, theGame.getNextDisplay());
+        theGameUI.draw(theGame.getNextDisplay());
     } catch (InvalidMoveException badMove) {
-        message = "I didn't understand what you meant, please enter a command";
-        theGameUI.setMessage(message);
+        message = badMove.getMessage();
+        theGameUI.setMessageToDisplay(message);
     }
     }
     }

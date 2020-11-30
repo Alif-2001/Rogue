@@ -4,6 +4,11 @@ import rogue.Item;
 
 public class NoSuchItemException extends Exception {
     private Item item = new Item();
+    
+    public NoSuchItemException(){
+        
+    }
+    
     /**
      * Exception constructor.
      * @param s excepetion message

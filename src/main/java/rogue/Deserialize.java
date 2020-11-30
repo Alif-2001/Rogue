@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.ClassNotFoundException;
 
 public class Deserialize {
+    
     public Deserialize(){
 
     }

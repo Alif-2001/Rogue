@@ -497,7 +497,7 @@ public class Rogue implements Serializable{
         String toPrint = null;
         currentRoom = roguePlayer.getCurrentRoom();
         if (input != UP && input != DOWN && input != LEFT && input != RIGHT) {
-            throw new InvalidMoveException("I don't know this move");
+            throw new InvalidMoveException(null);
         }
 
         Point curPosition = roguePlayer.getXyLocation();
@@ -519,9 +519,10 @@ public class Rogue implements Serializable{
             doorFound = true;
         }
         if (doorFound) {
-            x = 1;
-            y = 1;
             currentRoom = rogueDoors.get(rogueDoors.indexOf(currentRoom.getDoor(doorDir))).getOtherRoom(currentRoom);
+            Point location = getDoorWayPosition(doorDir);
+            x = location.getX();
+            y = location.getY();
         }
         newPosition.setLocation(x, y);
         roguePlayer.setXyLocation(newPosition);
@@ -536,6 +537,35 @@ public class Rogue implements Serializable{
         currentRoom.setPlayer(roguePlayer);
         currentRoom.setSymbols(rogueSymbols);
         return toPrint;
+    }
+
+    private Point getDoorWayPosition(String doorDir){
+        doorDir = getOtherDir(doorDir);
+        Point newLocation = new Point();
+        int location = rogueDoors.get(rogueDoors.indexOf(currentRoom.getDoor(doorDir))).getPosition(doorDir);
+        if(doorDir.equals("N")){
+            newLocation.setLocation(location, 1);
+        }else if(doorDir.equals("S")){
+            newLocation.setLocation(location, currentRoom.getHeight()-2);
+        }else if(doorDir.equals("E")){
+            newLocation.setLocation(currentRoom.getWidth()-2, location);
+        }else if(doorDir.equals("W")){
+            newLocation.setLocation(1, location);
+        }
+        return newLocation;
+    }
+
+    private String getOtherDir(String dir){
+        if(dir.equals("N")){
+            return "S";
+        }else if(dir.equals("S")){
+            return "N";
+        }else if(dir.equals("E")){
+            return "W";
+        }else if(dir.equals("W")){
+            return "E";
+        }
+        return null;
     }
 
     /**

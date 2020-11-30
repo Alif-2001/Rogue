@@ -1,5 +1,8 @@
 package rogue;
 public class NotEnoughDoorsException extends Exception {
+    public NotEnoughDoorsException(){
+        
+    }
     /**
      * Exception constructor.
      * @param s excepetion message
