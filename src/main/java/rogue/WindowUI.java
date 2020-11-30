@@ -6,7 +6,7 @@ import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.swing.SwingTerminal;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.TerminalPosition;
-import com.googlecode.lanterna.gui2.LayoutManager;
+
 
 import javax.swing.JFrame;
 import java.awt.Container;
@@ -19,29 +19,19 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.JTextArea;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JList;
 import javax.swing.border.Border;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.filechooser.FileSystemView;
 
-import java.awt.Color;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.io.File;
 
 public class WindowUI extends JFrame {
@@ -54,11 +44,13 @@ public class WindowUI extends JFrame {
     // Screen buffer dimensions are different than terminal dimensions
     public static final int COLS = 80;
     public static final int ROWS = 24;
+    private int storeHeight = (2 * 2 * 2) + 2;
+    private int storeWidth = storeHeight;
    private final char startCol = 0;
    private final char roomRow = 1;
    private Container contentPane;
-   private JTextArea inventory = new JTextArea(10, 10);
-   private JTextArea clothing = new JTextArea(10, 5);
+   private JTextArea inventory = new JTextArea(storeHeight, storeWidth);
+   private JTextArea clothing = new JTextArea(storeHeight, storeWidth);
    private JLabel playerName = new JLabel();
    private JLabel message = new JLabel();
    private Rogue game;
@@ -71,29 +63,43 @@ Constructor.
         super("Rogue");
     }
 
-    public void setGame(Rogue newGame){
+    /**
+     * This method sets the Rogue game we're playing.
+     * @param newGame the Rogue game
+     */
+    public void setGame(Rogue newGame) {
         game = newGame;
     }
 
-    public Rogue getGame(){
+    /**
+     * This method return the Rogue game we are playing.
+     * @return the Rogue game
+     */
+    public Rogue getGame() {
         return game;
     }
 
-    public void startWindow(){
+    /**
+     * This method initializes the window.
+     */
+    public void startWindow() {
         contentPane = getContentPane();
-        setWindowDefaults(getContentPane());
+        setWindowDefaults();
         setUpPanels();
         pack();
         start();
     }
 
-    public void updateWindow(){
+    /**
+     * This method updates the inventory and the clothes the player holds.
+     */
+    public void updateWindow() {
         contentPane = getContentPane();
         updateInventory();
         updateClothing();
     }
 
-    private void setWindowDefaults(Container contentPane) {
+    private void setWindowDefaults() {
         setTitle("Rogue!");
         setSize(WIDTH, HEIGHT);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -105,10 +111,10 @@ Constructor.
         JPanel terminalPanel = new JPanel();
         terminal = new SwingTerminal();
         terminalPanel.add(terminal);
-        contentPane.add(terminalPanel,BorderLayout.WEST);
+        contentPane.add(terminalPanel, BorderLayout.WEST);
     }
 
-    private void setUpPanels(){
+    private void setUpPanels() {
         JPanel inventoryPanel = new JPanel();
         makeMenuBar();
         setUpLabelPanel();
@@ -117,7 +123,7 @@ Constructor.
         setTerminal();
     }
 
-    private void makeMenuBar(){
+    private void makeMenuBar() {
         JMenuBar menubar = new JMenuBar();
         setJMenuBar(menubar);
 
@@ -131,52 +137,54 @@ Constructor.
         JMenuItem load = new JMenuItem("Load Game");
         load.addActionListener(ev -> loadGame());
         JMenuItem changeName = new JMenuItem("Change Name");
-        changeName.addActionListener(ev -> NameChange());
-
+        changeName.addActionListener(ev -> nameChange());
         optionsMenu.add(loadJSON);
         optionsMenu.add(load);
         optionsMenu.add(save);
         optionsMenu.add(changeName);
     }
 
-    private String FileChooser(){
+    private String fileChooser() {
         File f = null;
-        try{
+        try {
             f = new File(new File(".").getCanonicalPath());
-        }catch (IOException e){
+        } catch (IOException e) {
 
         }
 
         JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getParentDirectory(f));
         int rValue = jfc.showOpenDialog(null);
-        if(rValue == JFileChooser.APPROVE_OPTION){
+        if (rValue == JFileChooser.APPROVE_OPTION) {
             File file = jfc.getSelectedFile();
             return file.getPath();
         }
         return null;
     }
 
-    private void saveGame(){
+    private void saveGame() {
         Serialize save = new Serialize();
-        save.SerializeGame(game);
+        save.serializeGame(game);
+        JOptionPane.showMessageDialog(this, "Your game is saved!");
     }
 
-    private void loadGame(){
+    private void loadGame() {
         Deserialize load = new Deserialize();
-        String file = FileChooser();
-        game = load.DeserializeGame(file);
-        while(game == null){
+        String file = fileChooser();
+        game = load.deserializeGame(file);
+        while (game == null) {
+            JOptionPane.showMessageDialog(this, "Select the right File!", "Inane error", JOptionPane.ERROR_MESSAGE);
             loadGame();
         }
         this.setGame(game);
         game.verifyRooms();
         this.updateWindow();
+        JOptionPane.showMessageDialog(this, "Your game is loaded!");
         message.setText("The game is loaded!");
         draw(game.getNextDisplay());
     }
 
-    private void loadJson(){
-        String file = FileChooser();
+    private void loadJson() {
+        String file = fileChooser();
         RogueParser parser = new RogueParser(file);
         Player gamePlayer = game.getPlayer();
         game = new Rogue(parser);
@@ -187,22 +195,22 @@ Constructor.
         draw(game.getNextDisplay());
     }
 
-    private void NameChange(){
+    private void nameChange() {
         String input = JOptionPane.showInputDialog(this, "Enter a new Name: ");
         game.getPlayer().setName(input);
         playerName.setText("Player: " + game.getPlayer().getName());
     }
 
-    private void setUpLabelPanel(){
+    private void setUpLabelPanel() {
         JPanel thePanel = new JPanel();
         Border prettyLine = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
         thePanel.setBorder(prettyLine);
-        playerName.setText("Player: "+game.getPlayer().getName());
+        playerName.setText("Player: " + game.getPlayer().getName());
         thePanel.add(playerName);
         contentPane.add(thePanel, BorderLayout.NORTH);
     }
 
-    private void setUpCommentPanel(){
+    private void setUpCommentPanel() {
         JPanel thePanel = new JPanel();
         Border prettyLine = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
         thePanel.setBorder(prettyLine);
@@ -211,22 +219,26 @@ Constructor.
         contentPane.add(thePanel, BorderLayout.SOUTH);
     }
 
-    public void setMessageToDisplay(String msg){
-        if(msg != null){
+    /**
+     * This method sets the message to be displayed at the bottom of the screen.
+     * @param msg the message to display
+     */
+    public void setMessageToDisplay(String msg) {
+        if (msg != null) {
             message.setText(msg);
         }
     }
 
-    private void setUpInventoryPanel(JPanel thePanel){
-        JPanel inventoryList = new JPanel(new GridLayout(2,1));
+    private void setUpInventoryPanel(JPanel thePanel) {
+        JPanel inventoryList = new JPanel(new GridLayout(2, 1));
         setUpInventoryList(inventoryList);
         setUpWearList(inventoryList);
         thePanel.add(inventoryList);
         contentPane.add(thePanel, BorderLayout.EAST);
     }
 
-    private void setUpInventoryList(JPanel thePanel){
-        thePanel.setLayout(new GridLayout(2,1));
+    private void setUpInventoryList(JPanel thePanel) {
+        thePanel.setLayout(new GridLayout(2, 1));
         JLabel heading = new JLabel("Current Inventory: ");
         thePanel.add(heading);
         inventory.setEditable(false);
@@ -234,8 +246,8 @@ Constructor.
         thePanel.add(scroll);
     }
 
-    private void setUpWearList(JPanel thePanel){
-        thePanel.setLayout(new GridLayout(2,1));
+    private void setUpWearList(JPanel thePanel) {
+        thePanel.setLayout(new GridLayout(2, 1));
         JLabel heading = new JLabel("Clothing: ");
         thePanel.add(heading);
         clothing.setEditable(false);
@@ -243,18 +255,18 @@ Constructor.
         thePanel.add(scroll);
     }
 
-    private void updateInventory(){
+    private void updateInventory() {
         String items = "";
-        for(Item item: game.getPlayer().getInventory()){
+        for (Item item: game.getPlayer().getInventory()) {
             items += item.getName();
             items += "\n";
         }
         inventory.setText(items);
     }
 
-    private void updateClothing(){
+    private void updateClothing() {
         String items = "";
-        for (Item item: game.getPlayer().getClothes()){
+        for (Item item: game.getPlayer().getClothes()) {
             items += item.getName();
             items += "\n";
         }
@@ -272,13 +284,13 @@ Constructor.
         }
     }
 
-    /**
-Prints a string to the screen starting at the indicated column and row.
-@param toDisplay the string to be printed
-@param column the column in which to start the display
-@param row the row in which to start the display
-**/
-        public void putString(String toDisplay, int column, int row) {
+        /**
+    Prints a string to the screen starting at the indicated column and row.
+    @param toDisplay the string to be printed
+    @param column the column in which to start the display
+    @param row the row in which to start the display
+    **/
+    public void putString(String toDisplay, int column, int row) {
 
             Terminal t = screen.getTerminal();
             try {
@@ -289,93 +301,103 @@ Prints a string to the screen starting at the indicated column and row.
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+    private void clearScreen() {
+        for (int i = 0; i < (storeHeight * 2 * 2 * 2); i++) {
+            putString("                                                          ", 0, i);
+        }
+    }
+
+    /**
+     * Redraws the whole screen including the room and the message.
+     * @param room the room map to be drawn
+     */
+        public void draw(String room) {
+
+            try {
+                clearScreen();
+                putString(room, startCol, roomRow);
+                screen.refresh();
+            } catch (IOException e) {
+
+            }
+
         }
 
-
-            private void clearScreen(){
-                for(int i = 0; i < 50; i++) {
-                    putString("                                                          ", 0, i);
-                }
-            } 
-
-/**
-Redraws the whole screen including the room and the message.
-@param message the message to be displayed at the top of the room
-@param room the room map to be drawn
-**/
-            public void draw(String room) {
-
-                try {
-                    clearScreen();
-                    putString(room, startCol, roomRow);
-                    screen.refresh();
-                } catch (IOException e) {
-
-                }
-
-        }
-
-/**
-Obtains input from the user and returns it as a char.  Converts arrow
-keys to the equivalent movement keys in rogue.
-@return the ascii value of the key pressed by the user
-**/
+        /**
+         * Obtains input from the user and returns it as a char.  Converts arrow
+         * keys to the equivalent movement keys in rogue.
+         * @return the ascii value of the key pressed by the user
+        */
         public char getInput() {
             KeyStroke keyStroke = null;
             char returnChar;
             while (keyStroke == null) {
-            try {
-                keyStroke = screen.pollInput();
+                try {
+                    keyStroke = screen.pollInput();
 
-            } catch (IOException e) {
-                e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             }
-
+            returnChar = getKeyStroke(keyStroke);
+            return returnChar;
         }
-         if (keyStroke.getKeyType() == KeyType.ArrowDown) {
-            returnChar = Rogue.DOWN;  //constant defined in rogue
-        } else if (keyStroke.getKeyType() == KeyType.ArrowUp) {
-            returnChar = Rogue.UP;
-        } else if (keyStroke.getKeyType() == KeyType.ArrowLeft) {
-            returnChar = Rogue.LEFT;
-        } else if (keyStroke.getKeyType() == KeyType.ArrowRight) {
-            returnChar = Rogue.RIGHT;
-        } else {
-            returnChar = keyStroke.getCharacter();
-        }
-        return returnChar;
-    }
 
-    public String checkAction(char input){
+        private char getKeyStroke(KeyStroke keyStroke) {
+            char returnChar;
+            if (keyStroke.getKeyType() == KeyType.ArrowDown) {
+                returnChar = Rogue.DOWN;  //constant defined in rogue
+            } else if (keyStroke.getKeyType() == KeyType.ArrowUp) {
+                returnChar = Rogue.UP;
+            } else if (keyStroke.getKeyType() == KeyType.ArrowLeft) {
+                returnChar = Rogue.LEFT;
+            } else if (keyStroke.getKeyType() == KeyType.ArrowRight) {
+                returnChar = Rogue.RIGHT;
+            } else {
+                returnChar = keyStroke.getCharacter();
+            }
+            return returnChar;
+        }
+
+    /**
+     * This method checks if the player wants to toss, eat or wear an item.
+     * @param input either 't','w', or 'e'
+     * @return it returns the message behind the action taken
+     */
+    public String checkAction(char input) {
         String msg = null;
-        if(input == 't'){
+        if (input == 't') {
             Item toToss = tossItem();
-            if(toToss != null){
-                msg = ((Tossable)toToss).toss();
+            if (toToss != null) {
+                msg = ((Tossable) toToss).toss();
             }
         }
-        if(input == 'e'){
+        if (input == 'e') {
             Item toEat = eatItem();
-            if(toEat != null){
-                msg = ((Edible)toEat).eat();
+            if (toEat != null) {
+                msg = ((Edible) toEat).eat();
             }
         }
-        if(input == 'w'){
+        if (input == 'w') {
             Item toWear = wearItem();
-            if(toWear != null){
-                msg = ((Wearable)toWear).wear();
-            }         
+            if (toWear != null) {
+                msg = ((Wearable) toWear).wear();
+            }
         }
         this.updateWindow();
         return msg;
     }
 
-    private Item eatItem(){
+    private Item eatItem() {
         ArrayList<String> list = new ArrayList<String>();
-        for(Item i: game.getPlayer().getInventory()){
-            if(i != null){
+        for (Item i: game.getPlayer().getInventory()) {
+            if (i != null) {
                 String type = i.getType();
-                if(type.equals("Food") || type.equals("Potion") || type.equals("Small Food")){
+                if (type.equals("Food") || type.equals("Potion") || type.equals("Small Food")) {
                     list.add(i.getName());
                 }
             }
@@ -385,18 +407,18 @@ keys to the equivalent movement keys in rogue.
         jcb.setEditable(false);
         JOptionPane.showMessageDialog(this, jcb, "Select the item to Eat", JOptionPane.QUESTION_MESSAGE);
         String item = jcb.getSelectedItem().toString();
-        if(item != null){
+        if (item != null) {
             return (getItemByName(jcb.getSelectedItem().toString()));
         }
         return null;
     }
 
-    private Item wearItem(){
+    private Item wearItem() {
         ArrayList<String> list = new ArrayList<String>();
-        for(Item i: game.getPlayer().getInventory()){
+        for (Item i: game.getPlayer().getInventory()) {
             String type = i.getType();
-            if(i != null){
-                if(type.equals("Clothing") || type.equals("Ring")){
+            if (i != null) {
+                if (type.equals("Clothing") || type.equals("Ring")) {
                     list.add(i.getName());
                 }
             }
@@ -406,18 +428,18 @@ keys to the equivalent movement keys in rogue.
         jcb.setEditable(false);
         JOptionPane.showMessageDialog(this, jcb, "Select the item to Wear", JOptionPane.QUESTION_MESSAGE);
         String item = jcb.getSelectedItem().toString();
-        if(item != null){
+        if (item != null) {
             return (getItemByName(jcb.getSelectedItem().toString()));
         }
         return null;
     }
 
-    private Item tossItem(){
+    private Item tossItem() {
         ArrayList<String> list = new ArrayList<String>();
-        for(Item i: game.getPlayer().getInventory()){
+        for (Item i: game.getPlayer().getInventory()) {
             String type = i.getType();
-            if(i != null){
-                if(type.equals("Potion") || type.equals("SmallFood")){
+            if (i != null) {
+                if (type.equals("Potion") || type.equals("SmallFood")) {
                     list.add(i.getName());
                 }
             }
@@ -427,61 +449,59 @@ keys to the equivalent movement keys in rogue.
         jcb.setEditable(false);
         JOptionPane.showMessageDialog(this, jcb, "Select the item to Toss", JOptionPane.QUESTION_MESSAGE);
         String item = jcb.getSelectedItem().toString();
-        if(item != null){
+        if (item != null) {
             return (getItemByName(jcb.getSelectedItem().toString()));
         }
         return null;
     }
 
-    private Item getItemByName(String name){
-        for(Item i: game.getPlayer().getInventory()){
-            if(name.equals(i.getName())){
+    private Item getItemByName(String name) {
+        for (Item i: game.getPlayer().getInventory()) {
+            if (name.equals(i.getName())) {
                 return i;
             }
         }
         return null;
     }
-/**
-The controller method for making the game logic work.
-@param args command line parameters
-**/
+
+    /**
+     * This method makes the game ready for us.
+     * @param fileName the JSON file containing Rooms and symbols
+     * @param player the player starting the game
+     * @return the Rogue game
+     */
+    public Rogue selfSetup(String fileName, Player player) {
+        RogueParser parser = new RogueParser(fileName);
+        Rogue theGame = new Rogue(parser);
+        theGame.setPlayer(player);
+        setGame(theGame);
+        startWindow();
+        setMessageToDisplay("Welcome to my Rogue Game!");
+        draw(theGame.getNextDisplay());
+        setVisible(true);
+        return theGame;
+    }
+
+    /**
+    The controller method for making the game logic work.
+    @param args command line parameters
+    **/
     public static void main(String[] args) {
-
     char userInput = 'h';
-    String message;
     String configurationFileLocation = "fileLocations.json";
-    //Parse the json files
-    RogueParser parser = new RogueParser(configurationFileLocation);
-    //allocate memory for the GUI
     WindowUI theGameUI = new WindowUI();
-    // allocate memory for the game and set it up
-    Rogue theGame = new Rogue(parser);
-   //set up the initial game display
     Player thePlayer = new Player("Judi");
-    theGame.setPlayer(thePlayer);
-    message = "Welcome to my Rogue game!";
-
-    theGameUI.setGame(theGame);
-    theGameUI.startWindow();
-    theGameUI.setMessageToDisplay(message);
-    theGameUI.draw(theGame.getNextDisplay());
-    theGameUI.setVisible(true);
-
+    Rogue theGame = theGameUI.selfSetup(configurationFileLocation, thePlayer);
     while (userInput != 'q') {
-    //get input from the user
     userInput = theGameUI.getInput();
-
-    //ask the game if the user can move there
     try {
         theGame = theGameUI.getGame();
         theGameUI.setMessageToDisplay(theGameUI.checkAction(userInput));
-        message = theGame.makeMove(userInput);
-        theGameUI.setMessageToDisplay(message);
+        theGameUI.setMessageToDisplay(theGame.makeMove(userInput));
         theGameUI.updateWindow();
         theGameUI.draw(theGame.getNextDisplay());
     } catch (InvalidMoveException badMove) {
-        message = badMove.getMessage();
-        theGameUI.setMessageToDisplay(message);
+        theGameUI.setMessageToDisplay(badMove.getMessage());
     }
     }
     }
