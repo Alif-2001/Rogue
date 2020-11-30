@@ -172,14 +172,14 @@ Constructor.
         String file = fileChooser();
         game = load.deserializeGame(file);
         while (game == null) {
-            JOptionPane.showMessageDialog(this, "Select the right File!", "Inane error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Select the right File!", "Error", JOptionPane.ERROR_MESSAGE);
             loadGame();
         }
         this.setGame(game);
         game.verifyRooms();
         this.updateWindow();
-        JOptionPane.showMessageDialog(this, "Your game is loaded!");
-        message.setText("The game is loaded!");
+        JOptionPane.showMessageDialog(this, "Your game has been loaded!");
+        message.setText("Your game has been loaded!");
         draw(game.getNextDisplay());
     }
 
@@ -191,7 +191,8 @@ Constructor.
         game.setPlayer(gamePlayer);
         this.setGame(game);
         this.updateWindow();
-        message.setText("The new map is loaded!");
+        JOptionPane.showMessageDialog(this, "The new map has been loaded!");
+        message.setText("The new map has been loaded!");
         draw(game.getNextDisplay());
     }
 
@@ -199,6 +200,7 @@ Constructor.
         String input = JOptionPane.showInputDialog(this, "Enter a new Name: ");
         game.getPlayer().setName(input);
         playerName.setText("Player: " + game.getPlayer().getName());
+        JOptionPane.showMessageDialog(this, "Your name has been changed to: " + input);
     }
 
     private void setUpLabelPanel() {
@@ -369,7 +371,7 @@ Constructor.
      * @return it returns the message behind the action taken
      */
     public String checkAction(char input) {
-        String msg = null;
+        String msg = "Could not perform any action.";
         if (input == 't') {
             Item toToss = tossItem();
             if (toToss != null) {
@@ -406,8 +408,7 @@ Constructor.
         JComboBox jcb = new JComboBox(list1);
         jcb.setEditable(false);
         JOptionPane.showMessageDialog(this, jcb, "Select the item to Eat", JOptionPane.QUESTION_MESSAGE);
-        String item = jcb.getSelectedItem().toString();
-        if (item != null) {
+        if (jcb.getSelectedItem() != null) {
             return (getItemByName(jcb.getSelectedItem().toString()));
         }
         return null;
@@ -427,8 +428,7 @@ Constructor.
         JComboBox jcb = new JComboBox(list1);
         jcb.setEditable(false);
         JOptionPane.showMessageDialog(this, jcb, "Select the item to Wear", JOptionPane.QUESTION_MESSAGE);
-        String item = jcb.getSelectedItem().toString();
-        if (item != null) {
+        if (jcb.getSelectedItem() != null) {
             return (getItemByName(jcb.getSelectedItem().toString()));
         }
         return null;
@@ -448,8 +448,7 @@ Constructor.
         JComboBox jcb = new JComboBox(list1);
         jcb.setEditable(false);
         JOptionPane.showMessageDialog(this, jcb, "Select the item to Toss", JOptionPane.QUESTION_MESSAGE);
-        String item = jcb.getSelectedItem().toString();
-        if (item != null) {
+        if (jcb.getSelectedItem() != null) {
             return (getItemByName(jcb.getSelectedItem().toString()));
         }
         return null;
