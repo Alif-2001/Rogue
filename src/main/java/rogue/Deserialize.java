@@ -11,7 +11,7 @@ public class Deserialize {
 
     }
     
-    public Rogue DeserializeGame(String fileName){
+    public Rogue deserializeGame(String fileName){
         Rogue game = null;
         try(ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName)); ){
             game = (Rogue)in.readObject();
