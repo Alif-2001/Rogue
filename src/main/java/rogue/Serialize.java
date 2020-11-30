@@ -9,7 +9,7 @@ public class Serialize {
     public Serialize(){
 
     }
-    public void SerializeGame(Rogue gameToSave){
+    public void serializeGame(Rogue gameToSave){
         String fileName = "save.game";
 
         try{
