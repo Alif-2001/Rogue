@@ -1,16 +1,18 @@
 package rogue;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.io.Serializable;
 /**
  * The player character.
  */
-public class Player {
+public class Player implements Serializable{
 
     private String playerName;
     private Point playerXyLocation;
     private Room playerRoom;
 
-    private ArrayList<Item> pickedItems = new ArrayList<>();
+    private Inventory inventory = new Inventory();
+    private ArrayList<Item> clothes = new ArrayList<Item>();
 
 
     /**
@@ -83,22 +85,38 @@ public class Player {
      * @param newItem item the player picks.
      */
     public void pickItem(Item newItem) {
-        pickedItems.add(newItem);
+        inventory.addItem(newItem);
+        newItem.setPlayer(this);
     }
 
     /**
      * this method is used to get all the items the player has picked.
      * @return an array of item the player has
      */
-    public ArrayList<Item> getItems() {
-        return pickedItems;
+    public ArrayList<Item> getInventory() {
+        return inventory.getItems();
+    }
+
+    public ArrayList<Item> getClothes(){
+        return clothes;
+    }
+
+    public void removeItemFromInventory(Item itemToRemove){
+        inventory.removeItem(itemToRemove);
+    }
+
+    public void wearItem(Item itemToWear){
+        clothes.add(itemToWear);
     }
 
     /**
      * this method is used to drop an item. the item is removed from the list of item the player currently has.
      * @param itemToDrop item the player needs to drop.
      */
-    public void dropItem(Item itemToDrop) {
-        pickedItems.remove(itemToDrop);
+    
+    public void tossItem(Item itemToDrop) {
+        inventory.removeItem(itemToDrop);
+        itemToDrop.setXyLocation(this.getXyLocation());
+        playerRoom.addSingleItem(itemToDrop);
     }
 }

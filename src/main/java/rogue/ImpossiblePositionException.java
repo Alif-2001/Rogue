@@ -1,4 +1,4 @@
-package rogue.rogueExceptions;
+package rogue;
 public class ImpossiblePositionException extends Exception {
     /**
      * Exception constructor.

@@ -1,7 +1,8 @@
 package rogue;
 import java.util.ArrayList;
+import java.io.Serializable;
 
-public class Door {
+public class Door implements Serializable{
     private ArrayList<Room> connectedRooms = new ArrayList<>();
     private int position;
     private String direction;
@@ -29,7 +30,7 @@ public class Door {
      * @return the position on the wall
      */
     public int getPosition(String dir) {
-        if (dir == direction) {
+        if (dir.equals(direction)) {
             return position;
         }
         return -1;
@@ -48,9 +49,7 @@ public class Door {
      * @param r room to link
      */
     public void connectRoom(Room r) {
-        if (connectedRooms.size() < 2) {
-            connectedRooms.add(r);
-        }
+        connectedRooms.add(r);
     }
 
     /**
@@ -68,7 +67,7 @@ public class Door {
      */
     public Room getOtherRoom(Room currentRoom) {
         for (Room room: connectedRooms) {
-            if (currentRoom.getId() != room.getId()) {
+            if (currentRoom != room) {
                 return room;
             }
         }

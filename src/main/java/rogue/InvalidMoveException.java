@@ -1,4 +1,4 @@
-package rogue.rogueExceptions;
+package rogue;
 
 public class InvalidMoveException extends Exception {
     /**

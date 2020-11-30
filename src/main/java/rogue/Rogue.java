@@ -7,6 +7,8 @@ import java.util.HashMap;
 //import java.io.IOException;
 import java.util.Random;
 
+import java.io.Serializable;
+
 import java.awt.Point;
 import java.util.Map;
 
@@ -15,26 +17,34 @@ import java.util.Map;
 //import org.json.simple.parser.JSONParser;
 //import org.json.simple.parser.ParseException;
 
-import rogue.rogueExceptions.ImpossiblePositionException;
-import rogue.rogueExceptions.InvalidMoveException;
-import rogue.rogueExceptions.NoSuchItemException;
-import rogue.rogueExceptions.NotEnoughDoorsException;
 
-
-public class Rogue {
+public class Rogue implements Serializable{
+    /**
+     *
+     */
+    private static final long serialVersionUID = 3967471703202977097L;
     private Player roguePlayer;
     private Room currentRoom;
-    private RogueParser parser;
     private ArrayList<Room> rogueRooms = new ArrayList<>();
     private ArrayList<Item> rogueItems = new ArrayList<>();
     private ArrayList<Door> rogueDoors = new ArrayList<>();
     private Map<String, Character> rogueSymbols = new HashMap<String, Character>();
 
-    public static final char UP = 'w';
-    public static final char DOWN = 's';
-    public static final char LEFT = 'a';
-    public static final char RIGHT = 'd';
+    public static final char UP = 'i';
+    public static final char DOWN = 'k';
+    public static final char LEFT = 'j';
+    public static final char RIGHT = 'l';
+    public static final char TOSS = 't';
+    public static final char EAT = 'e';
+    public static final char WEAR = 'w';
     private String nextDisplay = "";
+
+    /**
+     * default parameter
+     */
+    public Rogue(){
+        roguePlayer = new Player("");
+    }
 
     /**
      * this method is used to initiate a rogue game.
@@ -42,30 +52,30 @@ public class Rogue {
      */
     public Rogue(RogueParser theDungeonInfo) {
 
-        parser = theDungeonInfo;
+        
 
-        Map<String, String> roomInfo = parser.nextRoom();
+        Map<String, String> roomInfo = theDungeonInfo.nextRoom();
         while (roomInfo != null) {
             addRoom(roomInfo);
-            roomInfo = parser.nextRoom();
+            roomInfo = theDungeonInfo.nextRoom();
         }
 
-        Map<String, String> itemInfo = parser.nextItem();
+        Map<String, String> itemInfo = theDungeonInfo.nextItem();
         while (itemInfo != null) {
             addItem(itemInfo);
-            itemInfo = parser.nextItem();
+            itemInfo = theDungeonInfo.nextItem();
         }
 
 
-        Map<String, String> doorInfo = parser.nextDoor();
+        Map<String, String> doorInfo = theDungeonInfo.nextDoor();
         while (doorInfo != null) {
             connectDoors(doorInfo);
-            doorInfo = parser.nextDoor();
+            doorInfo = theDungeonInfo.nextDoor();
         }
 
-        addItemToRooms();
+        //addItemToRooms();
         verifyRooms();
-        addSymbols(parser.getSymbols());
+        addSymbols(theDungeonInfo.getSymbols());
 
     }
 
@@ -88,7 +98,7 @@ public class Rogue {
     }
 
     /**
-     * this method is used to get the player currently playing th game.
+     * this method is used to get the player currently playing the game.
      * @return the player in the game
      */
     public Player getPlayer() {
@@ -97,11 +107,24 @@ public class Rogue {
     }
 
     /**
+     * this method is used to set the current player's name.
+     * @param player the player's new name
+     */
+
+    public void setPlayer(Player player) {
+        roguePlayer.setName(player.getName());
+    }
+
+    /**
      * this method is used to get all the doors in the game.
      * @return a list of all the doors.
      */
     public ArrayList<Door> getDoors() {
         return rogueDoors;
+    }
+
+    public Room getCurrentRoom(){
+        return currentRoom;
     }
 
     /**
@@ -143,15 +166,19 @@ public class Rogue {
         String[] direction = {"N", "S", "E", "W"};
 
         for (String letter: direction) {
-            if (Integer.parseInt(toAdd.get(letter).toString()) != -1) {
-                Door door = new Door();
-                door.setLocation(Integer.parseInt(toAdd.get(letter).toString()), letter);
-                door.connectRoom(room);
-                rogueDoors.add(door);
+            if(toAdd.get(letter) != null){
+                if (Integer.parseInt(toAdd.get(letter).toString()) != -1) {
+                    Door door = new Door();
+                    door.setLocation(Integer.parseInt(toAdd.get(letter).toString()), letter);
+                    door.connectRoom(room);
+                    rogueDoors.add(door);
+                }
             }
         }
 
-        if (Boolean.parseBoolean(toAdd.get("start").toString())) {
+
+        if (toAdd.get("start") != null && Boolean.parseBoolean(toAdd.get("start").toString())) {
+            currentRoom = room;
             room.makeStart();
             roguePlayer = room.getPlayer();
         }
@@ -159,6 +186,28 @@ public class Rogue {
         rogueRooms.add(room);
     }
 
+    private Item createItem(String type){
+
+        if(type.equals("Food")){
+            Item food = new Food();
+            return food;
+        }else if(type.equals("SmallFood")){
+            Item smallFood = new SmallFood();
+            return smallFood;
+        }else if(type.equals("Clothing")){
+            Item clothing = new Clothing();
+            return clothing;
+        }else if(type.equals("Potion")){
+            Item potion = new Potion();
+            return potion;
+        }else if(type.equals("Ring")){
+            Item ring = new Ring();
+            return ring;
+        }else{
+            Item item = new Item();
+            return item;
+        }
+    }
     /**
      * this method is used to add items to the game.
      * @param toAdd map containing the id, the position, the room, the name, and the type of the item.
@@ -185,9 +234,9 @@ public class Rogue {
         */
         for (Room room: rogueRooms) {
             if (toAdd.get("room") != null && room.getId() == Integer.parseInt(toAdd.get("room").toString())) {
-                Item item = new Item();
+                Item item = createItem(toAdd.get("type").toString());
                 item.setCurrentRoom(room);
-                item.setId(Integer.parseInt(toAdd.get("id").toString()));
+                item.setId(Integer.parseInt(toAdd.get("id").toString())); 
                 item.setName(toAdd.get("name").toString());
                 item.setType(toAdd.get("type").toString());
                 item.setDescription(toAdd.get("description").toString());
@@ -196,10 +245,19 @@ public class Rogue {
                 Integer y = Integer.parseInt(toAdd.get("y").toString());
                 position.setLocation(x, y);
                 item.setXyLocation(position);
-
                 rogueItems.add(item);
+                addItemToRooms(item);
             }
         }
+    }
+
+    private Room getRoomById(int id){
+        for(Room room: rogueRooms){
+            if(room.getId() == id){
+                return room;
+            }
+        }
+        return null;
     }
 
     /**
@@ -207,52 +265,43 @@ public class Rogue {
      * @param toAdd map containing which room doors connect to others
      */
     public void connectDoors(Map<String, String> toAdd) {
-
+        ArrayList<Door> doorsAdded = new ArrayList<Door>();
         for (Room room: rogueRooms) {
+            doorsAdded.clear();
             if (Integer.parseInt(toAdd.get("id").toString()) == room.getId()) {
-                for (Room room2: rogueRooms) {
-                    String[] direction = {"N", "S", "E", "W"};
-                    for (String letter: direction) {
-                        if (Integer.parseInt(toAdd.get(letter + "_Con").toString()) == room2.getId()) {
-                            for (Door door: rogueDoors) {
-                                if (door.getConnectedRooms().get(0).getId() == room.getId()) {
-                                    if (!(room.getDoors().values().contains(door))) {
-                                        door.connectRoom(room2);
-                                        room.addDoor(door);
-                                    }
-                                }
-                            }
-                        }
+                for(Door door: rogueDoors) {
+                    if(door.getConnectedRooms().get(0).getId() == room.getId() && !(doorsAdded.contains(door))){
+                        Integer connectRoom = Integer.parseInt(toAdd.get(door.getDirection()+ "_Con").toString());
+                        Room room2 = getRoomById(connectRoom);
+                        door.connectRoom(room2);
+                        room.addDoor(door);
+                        doorsAdded.add(door);
                     }
                 }
             }
         }
-
     }
 
     /**
      * this method is used to add items of the game to the respective rooms.
      */
-    public void addItemToRooms() {
-        for (Item item: rogueItems) {
-            for (Room room: rogueRooms) {
-                if (item.getCurrentRoom().getId() == room.getId()) {
-                    try {
-                        room.addItem(item);
-                    } catch (ImpossiblePositionException e) {
-                        Point position = new Point();
-                        int randX = generateRandomInt(1, room.getWidth() - 2);
-                        int randY = generateRandomInt(1, room.getHeight() - 2);
-                        position.setLocation(randX, randY);
-                        item.setXyLocation(position);
-                        room.addSingleItem(item);
-                    } catch (NoSuchItemException ex) {
-                        System.out.println(ex.getMessage());
-                        room.removeItem(ex.getItem());
-                    }
+    public void addItemToRooms(Item item) {
+        for (Room room: rogueRooms) {
+            if (item.getCurrentRoom().getId() == room.getId()) {
+                try {
+                    room.addItem(item);
+                } catch (ImpossiblePositionException e) {
+                    Point position = new Point();
+                    int randX = generateRandomInt(1, room.getWidth() - 2);
+                    int randY = generateRandomInt(1, room.getHeight() - 2);
+                    position.setLocation(randX, randY);
+                    item.setXyLocation(position);
+                    room.addSingleItem(item);
+                } catch (NoSuchItemException ex) {
+                    System.out.println(ex.getMessage());
+                    room.removeItem(ex.getItem());
                 }
             }
-
         }
     }
 
@@ -276,6 +325,7 @@ public class Rogue {
             try {
                 room.verifyRoom();
             } catch (NotEnoughDoorsException e) {
+                System.out.println(e.getMessage());
                 Door newDoor = new Door();
 
                 newDoor.connectRoom(room);
@@ -291,7 +341,6 @@ public class Rogue {
                 for (Room room2: rogueRooms) {
                     if (room2.getDoors().size() < totalDoors && room2.getId() != room.getId()) {
                         newDoor.connectRoom(room2);
-                        room2.addDoor(newDoor);
                     }
                 }
                 if (newDoor.getConnectedRooms().size() < 2) {
@@ -486,7 +535,6 @@ public class Rogue {
         }
         currentRoom.setPlayer(roguePlayer);
         currentRoom.setSymbols(rogueSymbols);
-        nextDisplay = currentRoom.displayRoom();
         return toPrint;
     }
 
@@ -495,6 +543,9 @@ public class Rogue {
      * @return the new/next display
      */
     public String getNextDisplay() {
+        currentRoom.setPlayer(roguePlayer);
+        currentRoom.setSymbols(rogueSymbols);
+        nextDisplay = currentRoom.displayRoom();
         return nextDisplay;
     }
 }

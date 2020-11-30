@@ -10,7 +10,6 @@ package rogue;
 //import org.json.simple.parser.JSONParser;
 //import org.json.simple.parser.ParseException;
 
-import rogue.rogueExceptions.InvalidMoveException;
 
 public class A1Solution {
 
@@ -31,12 +30,14 @@ public class A1Solution {
 
         String disp = rogue.displayAll();
         System.out.println(disp);
-        try {
-            rogue.makeMove(rogue.DOWN);
-        } catch (InvalidMoveException e) {
-            System.out.println(e.getMessage());
-        }
-        disp = rogue.getNextDisplay();
-        System.out.println(disp);
+
+        Serialize save = new Serialize();
+        save.SerializeGame(rogue);
+
+        Deserialize load = new Deserialize();
+        Rogue game2 = load.DeserializeGame("save.game");
+
+        System.out.println("SAVED GAME:");
+        System.out.println(game2.displayAll());
     }
 }

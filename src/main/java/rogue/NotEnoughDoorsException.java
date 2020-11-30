@@ -1,5 +1,4 @@
-package rogue.rogueExceptions;
-
+package rogue;
 public class NotEnoughDoorsException extends Exception {
     /**
      * Exception constructor.

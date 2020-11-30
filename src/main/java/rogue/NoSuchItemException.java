@@ -1,4 +1,4 @@
-package rogue.rogueExceptions;
+package rogue;
 
 import rogue.Item;
 

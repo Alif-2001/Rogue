@@ -9,7 +9,6 @@ import com.googlecode.lanterna.screen.TerminalScreen;
 // import com.googlecode.lanterna.screen.VirtualScreen;
 import com.googlecode.lanterna.terminal.ansi.UnixTerminal;
 
-import rogue.rogueExceptions.InvalidMoveException;
 
 // import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.terminal.Terminal;
@@ -123,11 +122,13 @@ public class TextUI {
         String message;
         String configurationFileLocation = "fileLocations.json";
     //create an instance of the UI
-        TextUI theGameUI = new TextUI();
+        
     // create an instance of the Game
         RogueParser parser = new RogueParser(configurationFileLocation);
         Rogue theGame = new Rogue(parser);
-
+        Player thePlayer = new Player("Judi");
+        theGame.setPlayer(thePlayer);
+        TextUI theGameUI = new TextUI();
     //send the output of the rooms to the GUI and show
         message = "Welcome to my Rogue game";
         theGameUI.draw(message, theGame.getNextDisplay());

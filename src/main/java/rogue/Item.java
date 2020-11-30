@@ -1,10 +1,10 @@
 package rogue;
 import java.awt.Point;
-
+import java.io.Serializable;
 /**
  * A basic Item class; basic functionality for both consumables and equipment.
  */
-public class Item  {
+public class Item implements Serializable{
 
     private int itemId;
     private String itemName;
@@ -13,6 +13,7 @@ public class Item  {
     private Character itemDisplay;
     private String itemDescription;
     private Room itemRoom;
+    private Player player;
 
     /**
      * Item constructor.
@@ -147,4 +148,13 @@ public class Item  {
     public void setCurrentRoom(Room newCurrentRoom) {
         itemRoom = newCurrentRoom;
     }
+
+    public Player getPlayer(){
+        return player;
+    }
+
+    public void setPlayer(Player newPlayer){
+        player = newPlayer;
+    }
+
 }

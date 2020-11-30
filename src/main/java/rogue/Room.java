@@ -1,11 +1,10 @@
 package rogue;
-import rogue.rogueExceptions.ImpossiblePositionException;
-import rogue.rogueExceptions.NoSuchItemException;
-import rogue.rogueExceptions.NotEnoughDoorsException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.awt.Point;
+
+import java.io.Serializable;
 
 // import sun.invoke.empty.Empty;
 
@@ -14,7 +13,7 @@ import java.awt.Point;
  * A room within the dungeon - contains monsters, treasure,
  * doors out, etc.
  */
-public class Room {
+public class Room implements Serializable{
 
    private int roomWidth;
    private int roomHeight;
@@ -120,16 +119,16 @@ public class Room {
 
       boolean itemOverlap = false;
 
-
-
       for (Item item: roomItems) {
          if (x == item.getXyLocation().getX() && y == item.getXyLocation().getY()) {
             itemOverlap = true;
          }
-         if (!thisGame.getItems().contains(item)) {
-            NoSuchItemException e = new NoSuchItemException("This Item does not exist in the room!");
-            e.setMissingItem(item);
-            throw(e);
+         if (thisGame.getItems() != null) {
+            if (thisGame.getItems().contains(item) != true) {
+               NoSuchItemException e = new NoSuchItemException("This Item does not exist in the game!");
+               e.setMissingItem(item);
+               throw(e);
+            }
          }
       }
 
@@ -138,6 +137,7 @@ public class Room {
                                                 + String.valueOf(newItem.getId()) + " " + "position.");
       } else {
          roomItems.add(newItem);
+         newItem.setCurrentRoom(this);
       }
    }
 
@@ -242,6 +242,7 @@ public class Room {
    public void addDoor(Door newDoor) {
       roomDoors.put(newDoor.getDirection(), newDoor);
    }
+
 
    /**
     * This method is used to know if the player is in the room.
