@@ -18,7 +18,7 @@ java -jar build/libs/A3.jar
 
 ##  Version 3
 
-Displays the rooms on the terminal. The player can move using "i, k, j, l".
+Displays the rooms in a GUI. The player can move using "i, k, j, l".
 Some additional feature have been added. you can now eat, toss, and wear items using
 the following commands "e, t, w". There is an inventory which tells you what you currently 
 have and what you are wearing. You can also save the game and load it later on.
