@@ -13,7 +13,7 @@ import java.io.Serializable;
  * A room within the dungeon - contains monsters, treasure,
  * doors out, etc.
  */
-public class Room implements Serializable{
+public class Room implements Serializable {
 
    private int roomWidth;
    private int roomHeight;
@@ -107,6 +107,25 @@ public class Room implements Serializable{
       thisGame = rogue;
    }
 
+   private boolean checkItemOverLap(Item newItem) throws NoSuchItemException {
+      double x = newItem.getXyLocation().getX();
+      double y = newItem.getXyLocation().getY();
+      boolean itemOverlap = false;
+      for (Item item: roomItems) {
+         if (x == item.getXyLocation().getX() && y == item.getXyLocation().getY()) {
+            itemOverlap = true;
+         }
+         if (thisGame.getItems() != null) {
+            if (!(thisGame.getItems().contains(item))) {
+               NoSuchItemException e = new NoSuchItemException("This Item does not exist in the game!");
+               e.setMissingItem(item);
+               throw(e);
+            }
+         }
+      }
+      return itemOverlap;
+   }
+
    /**
     * This method is used to add an item to the room.
     * @param newItem the new item to add to the room
@@ -116,20 +135,11 @@ public class Room implements Serializable{
    public void addItem(Item newItem) throws ImpossiblePositionException, NoSuchItemException {
       double x = newItem.getXyLocation().getX();
       double y = newItem.getXyLocation().getY();
-
       boolean itemOverlap = false;
-
-      for (Item item: roomItems) {
-         if (x == item.getXyLocation().getX() && y == item.getXyLocation().getY()) {
-            itemOverlap = true;
-         }
-         if (thisGame.getItems() != null) {
-            if (thisGame.getItems().contains(item) != true) {
-               NoSuchItemException e = new NoSuchItemException("This Item does not exist in the game!");
-               e.setMissingItem(item);
-               throw(e);
-            }
-         }
+      try {
+         itemOverlap = checkItemOverLap(newItem);
+      } catch (NoSuchItemException e) {
+         throw(e);
       }
 
       if (x <= 0 || y <= 0 || x >= roomWidth - 1 || y >= roomHeight - 1 || itemOverlap) {
@@ -263,26 +273,7 @@ public class Room implements Serializable{
       roomSymbols = symbols;
    }
 
-   /**
-    * This method is used to verify if the room has everything (doors, items) in right place.
-    * @return (boolean) is everything alright
-    * @throws NotEnoughDoorsException if the room doesn't have any doors
-    */
-   public boolean verifyRoom() throws NotEnoughDoorsException {
-
-      for (Item item: roomItems) {
-         double x = item.getXyLocation().getX();
-         double y = item.getXyLocation().getY();
-
-         if (x <= 0 || y <= 0 || x >= roomWidth - 1 || y >= roomHeight - 1) {
-            return false;
-         }
-      }
-
-      if (roomDoors.size() == 0) {
-         throw new NotEnoughDoorsException("Not enough Doors in room: " + String.valueOf(roomId));
-      }
-
+   private boolean isDoorsInBound() {
       String[] direction = {"N", "S", "E", "W"};
       for (String letter: direction) {
          if (letter == "N" || letter == "S") {
@@ -296,16 +287,31 @@ public class Room implements Serializable{
             }
          }
       }
-
-
       return true;
+   }
+   /**
+    * This method is used to verify if the room has everything (doors, items) in right place.
+    * @return (boolean) is everything alright
+    * @throws NotEnoughDoorsException if the room doesn't have any doors
+    */
+   public boolean verifyRoom() throws NotEnoughDoorsException {
+      for (Item item: roomItems) {
+         double x = item.getXyLocation().getX();
+         double y = item.getXyLocation().getY();
+         if (x <= 0 || y <= 0 || x >= roomWidth - 1 || y >= roomHeight - 1) {
+            return false;
+         }
+      }
+      if (roomDoors.size() == 0) {
+         throw new NotEnoughDoorsException("Not enough Doors in room: " + String.valueOf(roomId));
+      }
+      return isDoorsInBound();
    }
 
 
    private String addDoorToDisplay(int i, int j) {
       String disp = "";
       if (i == 0 || i == roomHeight - 1) {
-
          if (getDoorLocation("N") != -1 || getDoorLocation("S") != -1) {
             if (getDoorLocation("N") != -1 && getDoorLocation("N") == j && i == 0) {
                disp += roomSymbols.get("DOOR");

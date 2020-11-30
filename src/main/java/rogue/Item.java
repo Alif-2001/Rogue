@@ -4,7 +4,7 @@ import java.io.Serializable;
 /**
  * A basic Item class; basic functionality for both consumables and equipment.
  */
-public class Item implements Serializable{
+public class Item implements Serializable {
 
     private int itemId;
     private String itemName;
@@ -149,11 +149,19 @@ public class Item implements Serializable{
         itemRoom = newCurrentRoom;
     }
 
-    public Player getPlayer(){
+    /**
+     * this method is used to get the player holding the item.
+     * @return Player
+     */
+    public Player getPlayer() {
         return player;
     }
 
-    public void setPlayer(Player newPlayer){
+    /**
+     * this miethod is used to set the player that is currently holding an item.
+     * @param newPlayer the player who has this item
+     */
+    public void setPlayer(Player newPlayer) {
         player = newPlayer;
     }
 

@@ -1,4 +1,4 @@
 package rogue;
 interface Wearable {
-    public String wear();
+    String wear();
 }

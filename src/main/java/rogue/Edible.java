@@ -1,5 +1,5 @@
 package rogue;
 
-interface Edible{
-    public String eat();
+interface Edible {
+    String eat();
 }

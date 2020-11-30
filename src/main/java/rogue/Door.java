@@ -2,7 +2,7 @@ package rogue;
 import java.util.ArrayList;
 import java.io.Serializable;
 
-public class Door implements Serializable{
+public class Door implements Serializable {
     private ArrayList<Room> connectedRooms = new ArrayList<>();
     private int position;
     private String direction;

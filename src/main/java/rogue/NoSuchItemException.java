@@ -1,14 +1,15 @@
 package rogue;
 
-import rogue.Item;
-
 public class NoSuchItemException extends Exception {
     private Item item = new Item();
-    
-    public NoSuchItemException(){
-        
+
+    /**
+     * default zero parameter constructor.
+     */
+    public NoSuchItemException() {
+
     }
-    
+
     /**
      * Exception constructor.
      * @param s excepetion message

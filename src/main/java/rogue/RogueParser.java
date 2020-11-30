@@ -15,7 +15,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class RogueParser implements Serializable{
+public class RogueParser implements Serializable {
 
     private ArrayList<Map<String, String>> rooms = new ArrayList<>();
     private ArrayList<Map<String, String>> items = new ArrayList<>();
@@ -78,6 +78,7 @@ public class RogueParser implements Serializable{
      * @return (Map) Information about a door
      */
     public Map<String, String> nextDoor() {
+
         if (doorIterator.hasNext()) {
             return doorIterator.next();
         } else {
@@ -131,38 +132,24 @@ public class RogueParser implements Serializable{
      * @param filename (String) Name of the file
      */
     private void parse(String filename) {
-
         JSONParser parser = new JSONParser();
         JSONObject roomsJSON;
         JSONObject symbolsJSON;
-
         try {
             Object obj = parser.parse(new FileReader(filename));
             JSONObject configurationJSON = (JSONObject) obj;
-
-            // Extract the Rooms value from the file to get the file location for rooms
             String roomsFileLocation = (String) configurationJSON.get("Rooms");
-
-            // Extract the Symbols value from the file to get the file location for symbols-map
             String symbolsFileLocation = (String) configurationJSON.get("Symbols");
-
             Object roomsObj = parser.parse(new FileReader(roomsFileLocation));
             roomsJSON = (JSONObject) roomsObj;
-
             Object symbolsObj = parser.parse(new FileReader(symbolsFileLocation));
             symbolsJSON = (JSONObject) symbolsObj;
-
-
             extractRoomInfo(roomsJSON);
             extractItemInfo(roomsJSON);
             extractSymbolInfo(symbolsJSON);
-
             roomIterator = rooms.iterator();
             itemIterator = items.iterator();
             doorIterator = rooms.iterator();
-
-            //itemLocationIterator = itemLocations.iterator();
-
         } catch (FileNotFoundException e) {
             System.out.println("Cannot find file named: " + filename);
         } catch (IOException e) {
@@ -170,7 +157,6 @@ public class RogueParser implements Serializable{
         } catch (ParseException e) {
             System.out.println("Error parsing JSON file");
         }
-
     }
 
     /**
@@ -205,6 +191,23 @@ public class RogueParser implements Serializable{
         }
     }
 
+    private void addRoomBasics(HashMap<String, String> room, JSONObject roomJSON) {
+        room.put("id", roomJSON.get("id").toString());
+        room.put("start", roomJSON.get("start").toString());
+        room.put("height", roomJSON.get("height").toString());
+        room.put("width", roomJSON.get("width").toString());
+        // Cheap way of making sure all 4 directions have a sentinel value in the map
+        room.put("E", "-1");
+        room.put("N", "-1");
+        room.put("S", "-1");
+        room.put("W", "-1");
+        //Set connections to -1
+        room.put("E_Con", "-1");
+        room.put("N_Con", "-1");
+        room.put("S_Con", "-1");
+        room.put("W_Con", "-1");
+    }
+
     /**
      * Get a room's information.
      * @param roomJSON (JSONObject) Contains information about one room
@@ -213,23 +216,7 @@ public class RogueParser implements Serializable{
     private Map<String, String> singleRoom(JSONObject roomJSON) {
 
         HashMap<String, String> room = new HashMap<>();
-        room.put("id", roomJSON.get("id").toString());
-        room.put("start", roomJSON.get("start").toString());
-        room.put("height", roomJSON.get("height").toString());
-        room.put("width", roomJSON.get("width").toString());
-
-        // Cheap way of making sure all 4 directions have a sentinel value in the map
-        room.put("E", "-1");
-        room.put("N", "-1");
-        room.put("S", "-1");
-        room.put("W", "-1");
-
-        //Set connections to -1
-        room.put("E_Con", "-1");
-        room.put("N_Con", "-1");
-        room.put("S_Con", "-1");
-        room.put("W_Con", "-1");
-
+        addRoomBasics(room, roomJSON);
         // Update the map with any doors in the room
         JSONArray doorArray = (JSONArray) roomJSON.get("doors");
         for (int j = 0; j < doorArray.size(); j++) {
@@ -238,13 +225,11 @@ public class RogueParser implements Serializable{
             room.replace(dir, doorObj.get("wall_pos").toString());
             room.replace(dir + "_Con", doorObj.get("con_room").toString());
         }
-
         JSONArray lootArray = (JSONArray) roomJSON.get("loot");
         // Loop through each item and update the hashmap
         for (int j = 0; j < lootArray.size(); j++) {
             itemLocations.add(itemPosition((JSONObject) lootArray.get(j), roomJSON.get("id").toString()));
         }
-
         return room;
     }
 
@@ -302,9 +287,7 @@ public class RogueParser implements Serializable{
             }
 
         }
-
         return item;
-
     }
 
 }

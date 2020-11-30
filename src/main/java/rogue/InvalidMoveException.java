@@ -1,8 +1,11 @@
 package rogue;
 
 public class InvalidMoveException extends Exception {
-    public InvalidMoveException(){
-        
+    /**
+     * Default zero parameter constructor.
+     */
+    public InvalidMoveException() {
+
     }
     /**
      * Exception constructor.

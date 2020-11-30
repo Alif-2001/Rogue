@@ -1,7 +1,10 @@
 package rogue;
 public class ImpossiblePositionException extends Exception {
-    public ImpossiblePositionException(){
-        
+    /**
+     * default zero parameter constructor.
+     */
+    public ImpossiblePositionException() {
+
     }
     /**
      * Exception constructor.

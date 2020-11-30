@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * The player character.
  */
-public class Player implements Serializable{
+public class Player implements Serializable {
 
     private String playerName;
     private Point playerXyLocation;
@@ -97,15 +97,27 @@ public class Player implements Serializable{
         return inventory.getItems();
     }
 
-    public ArrayList<Item> getClothes(){
+    /**
+     * this methods is used to get the clothes the player is wearing.
+     * @return the array of item the player is wearing
+     */
+    public ArrayList<Item> getClothes() {
         return clothes;
     }
 
-    public void removeItemFromInventory(Item itemToRemove){
+    /**
+     * this method removes an item from the player's inventory.
+     * @param itemToRemove the item to be removed
+     */
+    public void removeItemFromInventory(Item itemToRemove) {
         inventory.removeItem(itemToRemove);
     }
 
-    public void wearItem(Item itemToWear){
+    /**
+     * this method is used to add items to the list of clothes the player is wearing.
+     * @param itemToWear the item to wear
+     */
+    public void wearItem(Item itemToWear) {
         clothes.add(itemToWear);
     }
 
@@ -113,7 +125,7 @@ public class Player implements Serializable{
      * this method is used to drop an item. the item is removed from the list of item the player currently has.
      * @param itemToDrop item the player needs to drop.
      */
-    
+
     public void tossItem(Item itemToDrop) {
         inventory.removeItem(itemToDrop);
         itemToDrop.setXyLocation(this.getXyLocation());

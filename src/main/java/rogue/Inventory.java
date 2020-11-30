@@ -3,21 +3,37 @@ package rogue;
 import java.util.ArrayList;
 import java.io.Serializable;
 
-public class Inventory implements Serializable{
+public class Inventory implements Serializable {
     private ArrayList<Item> pickedItems = new ArrayList<>();
-    public Inventory(){
+
+    /**
+     * default zero parameter constructor.
+     */
+    public Inventory() {
 
     }
 
-    public void addItem(Item item){
+    /**
+     * this method is used to add item to the inventory.
+     * @param item the new item
+     */
+    public void addItem(Item item) {
         pickedItems.add(item);
     }
 
-    public ArrayList<Item> getItems(){
+    /**
+     * this method is used to get all the item in the inventory.
+     * @return an array of Items in the inventory
+     */
+    public ArrayList<Item> getItems() {
         return pickedItems;
     }
 
-    public void removeItem(Item item){
+    /**
+     * this method is used to remove an item in the inventory.
+     * @param item it's the item we want to remove
+     */
+    public void removeItem(Item item) {
         pickedItems.remove(item);
     }
 }

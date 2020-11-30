@@ -1,7 +1,10 @@
 package rogue;
 
 public class Magic extends Item {
-    public Magic(){
+    /**
+     * default zero parameter constructor.
+     */
+    public Magic() {
         super();
     }
 }

@@ -1,5 +1,5 @@
 package rogue;
 
 interface Tossable {
-    public String toss();
+    String toss();
 }

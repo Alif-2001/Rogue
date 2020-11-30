@@ -18,7 +18,7 @@ import java.util.Map;
 //import org.json.simple.parser.ParseException;
 
 
-public class Rogue implements Serializable{
+public class Rogue implements Serializable {
     /**
      *
      */
@@ -29,6 +29,7 @@ public class Rogue implements Serializable{
     private ArrayList<Item> rogueItems = new ArrayList<>();
     private ArrayList<Door> rogueDoors = new ArrayList<>();
     private Map<String, Character> rogueSymbols = new HashMap<String, Character>();
+    private int totalDoors = 2 + 2; //two doors on N and S, two on E and W.
 
     public static final char UP = 'i';
     public static final char DOWN = 'k';
@@ -40,9 +41,9 @@ public class Rogue implements Serializable{
     private String nextDisplay = "";
 
     /**
-     * default parameter
+     * default parameter.
      */
-    public Rogue(){
+    public Rogue() {
         roguePlayer = new Player("");
     }
 
@@ -52,7 +53,6 @@ public class Rogue implements Serializable{
      */
     public Rogue(RogueParser theDungeonInfo) {
 
-        
 
         Map<String, String> roomInfo = theDungeonInfo.nextRoom();
         while (roomInfo != null) {
@@ -123,50 +123,18 @@ public class Rogue implements Serializable{
         return rogueDoors;
     }
 
-    public Room getCurrentRoom(){
+    /**
+     * this method returns the current room the player is in.
+     * @return the current room
+     */
+    public Room getCurrentRoom() {
         return currentRoom;
     }
 
-    /**
-     * this method is used to create rooms and add them to the list of rooms in the game.
-     * @param toAdd map containing the id, the start value, the hight, the width, and doors in a single room.
-     */
-    public void addRoom(Map<String, String> toAdd) {
-
-        /* allocate memory for a room object
-            look up the attributes of the room in the map
-            set the fields for the room object you just created using the values you looked up
-
-            int theWidth = someow_convert_to_int(toAdd.get("width"));
-            theRoom.setWidth(theWidth)
-            do this for every attribute
-
-            add the room object to the list of dungeon rooms
-            myRooms.add(theRoom);
-
-            room fields in the hashmap include:
-            id
-            start
-            height
-            width
-            N
-            S
-            E
-            W
-
-            directions are -1 if there is no door there.
-            */
-
-        Room room = new Room();
-
-        room.setHeight(Integer.parseInt(toAdd.get("height").toString()));
-        room.setWidth(Integer.parseInt(toAdd.get("width").toString()));
-        room.setId(Integer.parseInt(toAdd.get("id").toString()));
-
+    private void addFirstDoor(Map<String, String> toAdd, Room room) {
         String[] direction = {"N", "S", "E", "W"};
-
         for (String letter: direction) {
-            if(toAdd.get(letter) != null){
+            if (toAdd.get(letter) != null) {
                 if (Integer.parseInt(toAdd.get(letter).toString()) != -1) {
                     Door door = new Door();
                     door.setLocation(Integer.parseInt(toAdd.get(letter).toString()), letter);
@@ -175,8 +143,18 @@ public class Rogue implements Serializable{
                 }
             }
         }
+    }
+    /**
+     * this method is used to create rooms and add them to the list of rooms in the game.
+     * @param toAdd map containing the id, the start value, the hight, the width, and doors in a single room.
+     */
+    public void addRoom(Map<String, String> toAdd) {
+        Room room = new Room();
 
-
+        room.setHeight(Integer.parseInt(toAdd.get("height").toString()));
+        room.setWidth(Integer.parseInt(toAdd.get("width").toString()));
+        room.setId(Integer.parseInt(toAdd.get("id").toString()));
+        addFirstDoor(toAdd, room);
         if (toAdd.get("start") != null && Boolean.parseBoolean(toAdd.get("start").toString())) {
             currentRoom = room;
             room.makeStart();
@@ -186,26 +164,24 @@ public class Rogue implements Serializable{
         rogueRooms.add(room);
     }
 
-    private Item createItem(String type){
-
-        if(type.equals("Food")){
+    private Item createItem(String type) {
+        if (type.equals("Food")) {
             Item food = new Food();
             return food;
-        }else if(type.equals("SmallFood")){
+        } else if (type.equals("SmallFood")) {
             Item smallFood = new SmallFood();
             return smallFood;
-        }else if(type.equals("Clothing")){
+        } else if (type.equals("Clothing")) {
             Item clothing = new Clothing();
             return clothing;
-        }else if(type.equals("Potion")){
+        } else if (type.equals("Potion")) {
             Item potion = new Potion();
             return potion;
-        }else if(type.equals("Ring")){
+        } else if (type.equals("Ring")) {
             Item ring = new Ring();
             return ring;
-        }else{
-            Item item = new Item();
-            return item;
+        } else {
+            return (new Item());
         }
     }
     /**
@@ -213,30 +189,12 @@ public class Rogue implements Serializable{
      * @param toAdd map containing the id, the position, the room, the name, and the type of the item.
      */
     public void addItem(Map<String, String> toAdd) {
-        /*
-        allocate memory for the item object
-        look up the attributes of the item in the map
-        set the fields in the object you just created using those values
-        add the item object to the list of items in the dungeon
-        add the item to the room it is currently located
-        by creating a void addItem(Item toAdd) method in Room.java and using it
 
-        fields in the item map include
-
-        id
-        x
-        y
-        room
-        name
-        type
-
-
-        */
         for (Room room: rogueRooms) {
             if (toAdd.get("room") != null && room.getId() == Integer.parseInt(toAdd.get("room").toString())) {
                 Item item = createItem(toAdd.get("type").toString());
                 item.setCurrentRoom(room);
-                item.setId(Integer.parseInt(toAdd.get("id").toString())); 
+                item.setId(Integer.parseInt(toAdd.get("id").toString()));
                 item.setName(toAdd.get("name").toString());
                 item.setType(toAdd.get("type").toString());
                 item.setDescription(toAdd.get("description").toString());
@@ -251,9 +209,9 @@ public class Rogue implements Serializable{
         }
     }
 
-    private Room getRoomById(int id){
-        for(Room room: rogueRooms){
-            if(room.getId() == id){
+    private Room getRoomById(int id) {
+        for (Room room: rogueRooms) {
+            if (room.getId() == id) {
                 return room;
             }
         }
@@ -269,9 +227,9 @@ public class Rogue implements Serializable{
         for (Room room: rogueRooms) {
             doorsAdded.clear();
             if (Integer.parseInt(toAdd.get("id").toString()) == room.getId()) {
-                for(Door door: rogueDoors) {
-                    if(door.getConnectedRooms().get(0).getId() == room.getId() && !(doorsAdded.contains(door))){
-                        Integer connectRoom = Integer.parseInt(toAdd.get(door.getDirection()+ "_Con").toString());
+                for (Door door: rogueDoors) {
+                    if (door.getConnectedRooms().get(0).getId() == room.getId() && !(doorsAdded.contains(door))) {
+                        Integer connectRoom = Integer.parseInt(toAdd.get(door.getDirection() + "_Con").toString());
                         Room room2 = getRoomById(connectRoom);
                         door.connectRoom(room2);
                         room.addDoor(door);
@@ -284,6 +242,7 @@ public class Rogue implements Serializable{
 
     /**
      * this method is used to add items of the game to the respective rooms.
+     * @param item this the item to be added
      */
     public void addItemToRooms(Item item) {
         for (Room room: rogueRooms) {
@@ -316,39 +275,38 @@ public class Rogue implements Serializable{
         return r.nextInt((max - min) + 1) + min;
     }
 
+    private void handleDoorException(Room room, Door newDoor) {
+        String[] direction = {"N", "S", "E", "W"};
+        String randomDirection = direction[generateRandomInt(0, (direction.length) - 1)];
+        if (randomDirection == "N" || randomDirection == "S") {
+            newDoor.setLocation(generateRandomInt(1, room.getWidth() - 2), randomDirection);
+        } else if (randomDirection == "E" || randomDirection == "W") {
+            newDoor.setLocation(generateRandomInt(2, room.getHeight() - 2 - 1), randomDirection);
+        }
+        for (Room room2: rogueRooms) {
+            if (room2.getDoors().size() < totalDoors && room2.getId() != room.getId()) {
+                newDoor.connectRoom(room2);
+            }
+        }
+        if (newDoor.getConnectedRooms().size() < 2) {
+            System.out.println("Dungeon file cannot be used!");
+            System.exit(0);
+        }
+        room.addDoor(newDoor);
+        rogueDoors.add(newDoor);
+    }
     /**
      * this method is used to verify the rooms before starting the game (items, door, and player in appropriate places).
      */
     public void verifyRooms() {
-        int totalDoors = 2 + 2; //two doors on N and S, two on E and W.
         for (Room room: rogueRooms) {
             try {
                 room.verifyRoom();
             } catch (NotEnoughDoorsException e) {
                 System.out.println(e.getMessage());
                 Door newDoor = new Door();
-
                 newDoor.connectRoom(room);
-                String[] direction = {"N", "S", "E", "W"};
-                String randomDirection = direction[generateRandomInt(0, (direction.length) - 1)];
-                if (randomDirection == "N" || randomDirection == "S") {
-                    newDoor.setLocation(generateRandomInt(1, room.getWidth() - 2), randomDirection);
-                }
-                if (randomDirection == "E" || randomDirection == "W") {
-                    newDoor.setLocation(generateRandomInt(2, room.getHeight() - 2 - 1), randomDirection);
-                }
-
-                for (Room room2: rogueRooms) {
-                    if (room2.getDoors().size() < totalDoors && room2.getId() != room.getId()) {
-                        newDoor.connectRoom(room2);
-                    }
-                }
-                if (newDoor.getConnectedRooms().size() < 2) {
-                    System.out.println("Dungeon file cannot be used!");
-                    System.exit(0);
-                }
-                room.addDoor(newDoor);
-                rogueDoors.add(newDoor);
+                handleDoorException(room, newDoor);
             }
         }
     }
@@ -539,30 +497,30 @@ public class Rogue implements Serializable{
         return toPrint;
     }
 
-    private Point getDoorWayPosition(String doorDir){
+    private Point getDoorWayPosition(String doorDir) {
         doorDir = getOtherDir(doorDir);
         Point newLocation = new Point();
         int location = rogueDoors.get(rogueDoors.indexOf(currentRoom.getDoor(doorDir))).getPosition(doorDir);
-        if(doorDir.equals("N")){
+        if (doorDir.equals("N")) {
             newLocation.setLocation(location, 1);
-        }else if(doorDir.equals("S")){
-            newLocation.setLocation(location, currentRoom.getHeight()-2);
-        }else if(doorDir.equals("E")){
-            newLocation.setLocation(currentRoom.getWidth()-2, location);
-        }else if(doorDir.equals("W")){
+        } else if (doorDir.equals("S")) {
+            newLocation.setLocation(location, currentRoom.getHeight() - 2);
+        } else if (doorDir.equals("E")) {
+            newLocation.setLocation(currentRoom.getWidth() - 2, location);
+        } else if (doorDir.equals("W")) {
             newLocation.setLocation(1, location);
         }
         return newLocation;
     }
 
-    private String getOtherDir(String dir){
-        if(dir.equals("N")){
+    private String getOtherDir(String dir) {
+        if (dir.equals("N")) {
             return "S";
-        }else if(dir.equals("S")){
+        } else if (dir.equals("S")) {
             return "N";
-        }else if(dir.equals("E")){
+        } else if (dir.equals("E")) {
             return "W";
-        }else if(dir.equals("W")){
+        } else if (dir.equals("W")) {
             return "E";
         }
         return null;
